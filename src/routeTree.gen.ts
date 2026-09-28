@@ -13,6 +13,25 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as GuardianRouteImport } from './routes/guardian'
 import { Route as HealthWorkerRouteImport } from './routes/health-worker'
 import { Route as PatientRouteImport } from './routes/patient'
+import { Route as GuardianIndexRouteImport } from './routes/guardian/index'
+import { Route as GuardianAdherenceRouteImport } from './routes/guardian/adherence'
+import { Route as GuardianAlertsRouteImport } from './routes/guardian/alerts'
+import { Route as GuardianDashboardRouteImport } from './routes/guardian/dashboard'
+import { Route as GuardianPatientRouteImport } from './routes/guardian/patient'
+import { Route as HealthWorkerIndexRouteImport } from './routes/health-worker/index'
+import { Route as HealthWorkerAdherenceRouteImport } from './routes/health-worker/adherence'
+import { Route as HealthWorkerAlertsRouteImport } from './routes/health-worker/alerts'
+import { Route as HealthWorkerDashboardRouteImport } from './routes/health-worker/dashboard'
+import { Route as HealthWorkerFieldLogRouteImport } from './routes/health-worker/field-log'
+import { Route as LoginIndexRouteImport } from './routes/login/index'
+import { Route as LoginRoleRouteImport } from './routes/login/$role'
+import { Route as PatientIndexRouteImport } from './routes/patient/index'
+import { Route as PatientAdherenceRouteImport } from './routes/patient/adherence'
+import { Route as PatientDashboardRouteImport } from './routes/patient/dashboard'
+import { Route as PatientProfileRouteImport } from './routes/patient/profile'
+import { Route as PatientTreatmentRouteImport } from './routes/patient/treatment'
+import { Route as HealthWorkerPatientsIndexRouteImport } from './routes/health-worker/patients/index'
+import { Route as HealthWorkerPatientsIdRouteImport } from './routes/health-worker/patients/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,39 +53,258 @@ const PatientRoute = PatientRouteImport.update({
   path: '/patient',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GuardianIndexRoute = GuardianIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GuardianRoute,
+} as any)
+const GuardianAdherenceRoute = GuardianAdherenceRouteImport.update({
+  id: '/adherence',
+  path: '/adherence',
+  getParentRoute: () => GuardianRoute,
+} as any)
+const GuardianAlertsRoute = GuardianAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => GuardianRoute,
+} as any)
+const GuardianDashboardRoute = GuardianDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => GuardianRoute,
+} as any)
+const GuardianPatientRoute = GuardianPatientRouteImport.update({
+  id: '/patient',
+  path: '/patient',
+  getParentRoute: () => GuardianRoute,
+} as any)
+const HealthWorkerIndexRoute = HealthWorkerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HealthWorkerRoute,
+} as any)
+const HealthWorkerAdherenceRoute = HealthWorkerAdherenceRouteImport.update({
+  id: '/adherence',
+  path: '/adherence',
+  getParentRoute: () => HealthWorkerRoute,
+} as any)
+const HealthWorkerAlertsRoute = HealthWorkerAlertsRouteImport.update({
+  id: '/alerts',
+  path: '/alerts',
+  getParentRoute: () => HealthWorkerRoute,
+} as any)
+const HealthWorkerDashboardRoute = HealthWorkerDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => HealthWorkerRoute,
+} as any)
+const HealthWorkerFieldLogRoute = HealthWorkerFieldLogRouteImport.update({
+  id: '/field-log',
+  path: '/field-log',
+  getParentRoute: () => HealthWorkerRoute,
+} as any)
+const LoginIndexRoute = LoginIndexRouteImport.update({
+  id: '/login/',
+  path: '/login/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoleRoute = LoginRoleRouteImport.update({
+  id: '/login/$role',
+  path: '/login/$role',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PatientIndexRoute = PatientIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PatientRoute,
+} as any)
+const PatientAdherenceRoute = PatientAdherenceRouteImport.update({
+  id: '/adherence',
+  path: '/adherence',
+  getParentRoute: () => PatientRoute,
+} as any)
+const PatientDashboardRoute = PatientDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => PatientRoute,
+} as any)
+const PatientProfileRoute = PatientProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => PatientRoute,
+} as any)
+const PatientTreatmentRoute = PatientTreatmentRouteImport.update({
+  id: '/treatment',
+  path: '/treatment',
+  getParentRoute: () => PatientRoute,
+} as any)
+const HealthWorkerPatientsIndexRoute =
+  HealthWorkerPatientsIndexRouteImport.update({
+    id: '/patients/',
+    path: '/patients/',
+    getParentRoute: () => HealthWorkerRoute,
+  } as any)
+const HealthWorkerPatientsIdRoute = HealthWorkerPatientsIdRouteImport.update({
+  id: '/patients/$id',
+  path: '/patients/$id',
+  getParentRoute: () => HealthWorkerRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/guardian': typeof GuardianRoute
-  '/health-worker': typeof HealthWorkerRoute
-  '/patient': typeof PatientRoute
+  '/guardian': typeof GuardianRouteWithChildren
+  '/health-worker': typeof HealthWorkerRouteWithChildren
+  '/patient': typeof PatientRouteWithChildren
+  '/guardian/adherence': typeof GuardianAdherenceRoute
+  '/guardian/alerts': typeof GuardianAlertsRoute
+  '/guardian/dashboard': typeof GuardianDashboardRoute
+  '/guardian/patient': typeof GuardianPatientRoute
+  '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
+  '/health-worker/alerts': typeof HealthWorkerAlertsRoute
+  '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
+  '/health-worker/field-log': typeof HealthWorkerFieldLogRoute
+  '/login/$role': typeof LoginRoleRoute
+  '/patient/adherence': typeof PatientAdherenceRoute
+  '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/profile': typeof PatientProfileRoute
+  '/patient/treatment': typeof PatientTreatmentRoute
+  '/guardian/': typeof GuardianIndexRoute
+  '/health-worker/': typeof HealthWorkerIndexRoute
+  '/login/': typeof LoginIndexRoute
+  '/patient/': typeof PatientIndexRoute
+  '/health-worker/patients/$id': typeof HealthWorkerPatientsIdRoute
+  '/health-worker/patients/': typeof HealthWorkerPatientsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/guardian': typeof GuardianRoute
-  '/health-worker': typeof HealthWorkerRoute
-  '/patient': typeof PatientRoute
+  '/guardian/adherence': typeof GuardianAdherenceRoute
+  '/guardian/alerts': typeof GuardianAlertsRoute
+  '/guardian/dashboard': typeof GuardianDashboardRoute
+  '/guardian/patient': typeof GuardianPatientRoute
+  '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
+  '/health-worker/alerts': typeof HealthWorkerAlertsRoute
+  '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
+  '/health-worker/field-log': typeof HealthWorkerFieldLogRoute
+  '/login/$role': typeof LoginRoleRoute
+  '/patient/adherence': typeof PatientAdherenceRoute
+  '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/profile': typeof PatientProfileRoute
+  '/patient/treatment': typeof PatientTreatmentRoute
+  '/guardian': typeof GuardianIndexRoute
+  '/health-worker': typeof HealthWorkerIndexRoute
+  '/login': typeof LoginIndexRoute
+  '/patient': typeof PatientIndexRoute
+  '/health-worker/patients/$id': typeof HealthWorkerPatientsIdRoute
+  '/health-worker/patients': typeof HealthWorkerPatientsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/guardian': typeof GuardianRoute
-  '/health-worker': typeof HealthWorkerRoute
-  '/patient': typeof PatientRoute
+  '/guardian': typeof GuardianRouteWithChildren
+  '/health-worker': typeof HealthWorkerRouteWithChildren
+  '/patient': typeof PatientRouteWithChildren
+  '/guardian/adherence': typeof GuardianAdherenceRoute
+  '/guardian/alerts': typeof GuardianAlertsRoute
+  '/guardian/dashboard': typeof GuardianDashboardRoute
+  '/guardian/patient': typeof GuardianPatientRoute
+  '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
+  '/health-worker/alerts': typeof HealthWorkerAlertsRoute
+  '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
+  '/health-worker/field-log': typeof HealthWorkerFieldLogRoute
+  '/login/$role': typeof LoginRoleRoute
+  '/patient/adherence': typeof PatientAdherenceRoute
+  '/patient/dashboard': typeof PatientDashboardRoute
+  '/patient/profile': typeof PatientProfileRoute
+  '/patient/treatment': typeof PatientTreatmentRoute
+  '/guardian/': typeof GuardianIndexRoute
+  '/health-worker/': typeof HealthWorkerIndexRoute
+  '/login/': typeof LoginIndexRoute
+  '/patient/': typeof PatientIndexRoute
+  '/health-worker/patients/$id': typeof HealthWorkerPatientsIdRoute
+  '/health-worker/patients/': typeof HealthWorkerPatientsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/guardian' | '/health-worker' | '/patient'
+  fullPaths:
+    | '/'
+    | '/guardian'
+    | '/health-worker'
+    | '/patient'
+    | '/guardian/adherence'
+    | '/guardian/alerts'
+    | '/guardian/dashboard'
+    | '/guardian/patient'
+    | '/health-worker/adherence'
+    | '/health-worker/alerts'
+    | '/health-worker/dashboard'
+    | '/health-worker/field-log'
+    | '/login/$role'
+    | '/patient/adherence'
+    | '/patient/dashboard'
+    | '/patient/profile'
+    | '/patient/treatment'
+    | '/guardian/'
+    | '/health-worker/'
+    | '/login/'
+    | '/patient/'
+    | '/health-worker/patients/$id'
+    | '/health-worker/patients/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/guardian' | '/health-worker' | '/patient'
-  id: '__root__' | '/' | '/guardian' | '/health-worker' | '/patient'
+  to:
+    | '/'
+    | '/guardian/adherence'
+    | '/guardian/alerts'
+    | '/guardian/dashboard'
+    | '/guardian/patient'
+    | '/health-worker/adherence'
+    | '/health-worker/alerts'
+    | '/health-worker/dashboard'
+    | '/health-worker/field-log'
+    | '/login/$role'
+    | '/patient/adherence'
+    | '/patient/dashboard'
+    | '/patient/profile'
+    | '/patient/treatment'
+    | '/guardian'
+    | '/health-worker'
+    | '/login'
+    | '/patient'
+    | '/health-worker/patients/$id'
+    | '/health-worker/patients'
+  id:
+    | '__root__'
+    | '/'
+    | '/guardian'
+    | '/health-worker'
+    | '/patient'
+    | '/guardian/adherence'
+    | '/guardian/alerts'
+    | '/guardian/dashboard'
+    | '/guardian/patient'
+    | '/health-worker/adherence'
+    | '/health-worker/alerts'
+    | '/health-worker/dashboard'
+    | '/health-worker/field-log'
+    | '/login/$role'
+    | '/patient/adherence'
+    | '/patient/dashboard'
+    | '/patient/profile'
+    | '/patient/treatment'
+    | '/guardian/'
+    | '/health-worker/'
+    | '/login/'
+    | '/patient/'
+    | '/health-worker/patients/$id'
+    | '/health-worker/patients/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  GuardianRoute: typeof GuardianRoute
-  HealthWorkerRoute: typeof HealthWorkerRoute
-  PatientRoute: typeof PatientRoute
+  GuardianRoute: typeof GuardianRouteWithChildren
+  HealthWorkerRoute: typeof HealthWorkerRouteWithChildren
+  PatientRoute: typeof PatientRouteWithChildren
+  LoginRoleRoute: typeof LoginRoleRoute
+  LoginIndexRoute: typeof LoginIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,14 +337,212 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/guardian/': {
+      id: '/guardian/'
+      path: '/'
+      fullPath: '/guardian/'
+      preLoaderRoute: typeof GuardianIndexRouteImport
+      parentRoute: typeof GuardianRoute
+    }
+    '/guardian/adherence': {
+      id: '/guardian/adherence'
+      path: '/adherence'
+      fullPath: '/guardian/adherence'
+      preLoaderRoute: typeof GuardianAdherenceRouteImport
+      parentRoute: typeof GuardianRoute
+    }
+    '/guardian/alerts': {
+      id: '/guardian/alerts'
+      path: '/alerts'
+      fullPath: '/guardian/alerts'
+      preLoaderRoute: typeof GuardianAlertsRouteImport
+      parentRoute: typeof GuardianRoute
+    }
+    '/guardian/dashboard': {
+      id: '/guardian/dashboard'
+      path: '/dashboard'
+      fullPath: '/guardian/dashboard'
+      preLoaderRoute: typeof GuardianDashboardRouteImport
+      parentRoute: typeof GuardianRoute
+    }
+    '/guardian/patient': {
+      id: '/guardian/patient'
+      path: '/patient'
+      fullPath: '/guardian/patient'
+      preLoaderRoute: typeof GuardianPatientRouteImport
+      parentRoute: typeof GuardianRoute
+    }
+    '/health-worker/': {
+      id: '/health-worker/'
+      path: '/'
+      fullPath: '/health-worker/'
+      preLoaderRoute: typeof HealthWorkerIndexRouteImport
+      parentRoute: typeof HealthWorkerRoute
+    }
+    '/health-worker/adherence': {
+      id: '/health-worker/adherence'
+      path: '/adherence'
+      fullPath: '/health-worker/adherence'
+      preLoaderRoute: typeof HealthWorkerAdherenceRouteImport
+      parentRoute: typeof HealthWorkerRoute
+    }
+    '/health-worker/alerts': {
+      id: '/health-worker/alerts'
+      path: '/alerts'
+      fullPath: '/health-worker/alerts'
+      preLoaderRoute: typeof HealthWorkerAlertsRouteImport
+      parentRoute: typeof HealthWorkerRoute
+    }
+    '/health-worker/dashboard': {
+      id: '/health-worker/dashboard'
+      path: '/dashboard'
+      fullPath: '/health-worker/dashboard'
+      preLoaderRoute: typeof HealthWorkerDashboardRouteImport
+      parentRoute: typeof HealthWorkerRoute
+    }
+    '/health-worker/field-log': {
+      id: '/health-worker/field-log'
+      path: '/field-log'
+      fullPath: '/health-worker/field-log'
+      preLoaderRoute: typeof HealthWorkerFieldLogRouteImport
+      parentRoute: typeof HealthWorkerRoute
+    }
+    '/login/': {
+      id: '/login/'
+      path: '/login'
+      fullPath: '/login/'
+      preLoaderRoute: typeof LoginIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login/$role': {
+      id: '/login/$role'
+      path: '/login/$role'
+      fullPath: '/login/$role'
+      preLoaderRoute: typeof LoginRoleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/patient/': {
+      id: '/patient/'
+      path: '/'
+      fullPath: '/patient/'
+      preLoaderRoute: typeof PatientIndexRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/patient/adherence': {
+      id: '/patient/adherence'
+      path: '/adherence'
+      fullPath: '/patient/adherence'
+      preLoaderRoute: typeof PatientAdherenceRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/patient/dashboard': {
+      id: '/patient/dashboard'
+      path: '/dashboard'
+      fullPath: '/patient/dashboard'
+      preLoaderRoute: typeof PatientDashboardRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/patient/profile': {
+      id: '/patient/profile'
+      path: '/profile'
+      fullPath: '/patient/profile'
+      preLoaderRoute: typeof PatientProfileRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/patient/treatment': {
+      id: '/patient/treatment'
+      path: '/treatment'
+      fullPath: '/patient/treatment'
+      preLoaderRoute: typeof PatientTreatmentRouteImport
+      parentRoute: typeof PatientRoute
+    }
+    '/health-worker/patients/': {
+      id: '/health-worker/patients/'
+      path: '/patients'
+      fullPath: '/health-worker/patients/'
+      preLoaderRoute: typeof HealthWorkerPatientsIndexRouteImport
+      parentRoute: typeof HealthWorkerRoute
+    }
+    '/health-worker/patients/$id': {
+      id: '/health-worker/patients/$id'
+      path: '/patients/$id'
+      fullPath: '/health-worker/patients/$id'
+      preLoaderRoute: typeof HealthWorkerPatientsIdRouteImport
+      parentRoute: typeof HealthWorkerRoute
+    }
   }
 }
 
+interface GuardianRouteChildren {
+  GuardianAdherenceRoute: typeof GuardianAdherenceRoute
+  GuardianAlertsRoute: typeof GuardianAlertsRoute
+  GuardianDashboardRoute: typeof GuardianDashboardRoute
+  GuardianPatientRoute: typeof GuardianPatientRoute
+  GuardianIndexRoute: typeof GuardianIndexRoute
+}
+
+const GuardianRouteChildren: GuardianRouteChildren = {
+  GuardianAdherenceRoute: GuardianAdherenceRoute,
+  GuardianAlertsRoute: GuardianAlertsRoute,
+  GuardianDashboardRoute: GuardianDashboardRoute,
+  GuardianPatientRoute: GuardianPatientRoute,
+  GuardianIndexRoute: GuardianIndexRoute,
+}
+
+const GuardianRouteWithChildren = GuardianRoute._addFileChildren(
+  GuardianRouteChildren,
+)
+
+interface HealthWorkerRouteChildren {
+  HealthWorkerAdherenceRoute: typeof HealthWorkerAdherenceRoute
+  HealthWorkerAlertsRoute: typeof HealthWorkerAlertsRoute
+  HealthWorkerDashboardRoute: typeof HealthWorkerDashboardRoute
+  HealthWorkerFieldLogRoute: typeof HealthWorkerFieldLogRoute
+  HealthWorkerIndexRoute: typeof HealthWorkerIndexRoute
+  HealthWorkerPatientsIdRoute: typeof HealthWorkerPatientsIdRoute
+  HealthWorkerPatientsIndexRoute: typeof HealthWorkerPatientsIndexRoute
+}
+
+const HealthWorkerRouteChildren: HealthWorkerRouteChildren = {
+  HealthWorkerAdherenceRoute: HealthWorkerAdherenceRoute,
+  HealthWorkerAlertsRoute: HealthWorkerAlertsRoute,
+  HealthWorkerDashboardRoute: HealthWorkerDashboardRoute,
+  HealthWorkerFieldLogRoute: HealthWorkerFieldLogRoute,
+  HealthWorkerIndexRoute: HealthWorkerIndexRoute,
+  HealthWorkerPatientsIdRoute: HealthWorkerPatientsIdRoute,
+  HealthWorkerPatientsIndexRoute: HealthWorkerPatientsIndexRoute,
+}
+
+const HealthWorkerRouteWithChildren = HealthWorkerRoute._addFileChildren(
+  HealthWorkerRouteChildren,
+)
+
+interface PatientRouteChildren {
+  PatientAdherenceRoute: typeof PatientAdherenceRoute
+  PatientDashboardRoute: typeof PatientDashboardRoute
+  PatientProfileRoute: typeof PatientProfileRoute
+  PatientTreatmentRoute: typeof PatientTreatmentRoute
+  PatientIndexRoute: typeof PatientIndexRoute
+}
+
+const PatientRouteChildren: PatientRouteChildren = {
+  PatientAdherenceRoute: PatientAdherenceRoute,
+  PatientDashboardRoute: PatientDashboardRoute,
+  PatientProfileRoute: PatientProfileRoute,
+  PatientTreatmentRoute: PatientTreatmentRoute,
+  PatientIndexRoute: PatientIndexRoute,
+}
+
+const PatientRouteWithChildren =
+  PatientRoute._addFileChildren(PatientRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  GuardianRoute: GuardianRoute,
-  HealthWorkerRoute: HealthWorkerRoute,
-  PatientRoute: PatientRoute,
+  GuardianRoute: GuardianRouteWithChildren,
+  HealthWorkerRoute: HealthWorkerRouteWithChildren,
+  PatientRoute: PatientRouteWithChildren,
+  LoginRoleRoute: LoginRoleRoute,
+  LoginIndexRoute: LoginIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

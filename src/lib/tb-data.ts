@@ -49,7 +49,12 @@ export interface Patient {
 export interface AlertItem {
   id: string;
   patientId: string;
-  kind: "MISSED_DOSE_ALERT" | "LOW_BATTERY_WARNING" | "DOSE_TAKEN_LATE" | "SUPPORT_REQUEST" | "BOX_ISSUE";
+  kind:
+    | "MISSED_DOSE_ALERT"
+    | "LOW_BATTERY_WARNING"
+    | "DOSE_TAKEN_LATE"
+    | "SUPPORT_REQUEST"
+    | "BOX_ISSUE";
   message: string;
   createdAt: string;
   severity: "high" | "medium" | "low";
@@ -166,10 +171,34 @@ export const patients: Patient[] = [
 ];
 
 export const guardians: Guardian[] = [
-  { id: "grd-1", name: "Mary Banda", relation: "Mother", phone: "+265 991 662 004", patientId: "pat-1" },
-  { id: "grd-2", name: "Blessings Phiri", relation: "Brother", phone: "+265 886 117 290", patientId: "pat-2" },
-  { id: "grd-3", name: "Eliza Nkhoma", relation: "Sister", phone: "+265 998 330 145", patientId: "pat-3" },
-  { id: "grd-4", name: "Patrick Gondwe", relation: "Son", phone: "+265 993 550 812", patientId: "pat-4" },
+  {
+    id: "grd-1",
+    name: "Mary Banda",
+    relation: "Mother",
+    phone: "+265 991 662 004",
+    patientId: "pat-1",
+  },
+  {
+    id: "grd-2",
+    name: "Blessings Phiri",
+    relation: "Brother",
+    phone: "+265 886 117 290",
+    patientId: "pat-2",
+  },
+  {
+    id: "grd-3",
+    name: "Eliza Nkhoma",
+    relation: "Sister",
+    phone: "+265 998 330 145",
+    patientId: "pat-3",
+  },
+  {
+    id: "grd-4",
+    name: "Patrick Gondwe",
+    relation: "Son",
+    phone: "+265 993 550 812",
+    patientId: "pat-4",
+  },
 ];
 
 /** Deterministic PRNG so server and client render identical demo history. */
@@ -229,7 +258,10 @@ export function buildInitialHistory(today: Date): DoseEntry[] {
         date,
         status,
         source,
-        time: status === "missed" ? "--:--" : `${String(hour).padStart(2, "0")}:${patient.doseTime.slice(3)}`,
+        time:
+          status === "missed"
+            ? "--:--"
+            : `${String(hour).padStart(2, "0")}:${patient.doseTime.slice(3)}`,
       });
     }
   }
