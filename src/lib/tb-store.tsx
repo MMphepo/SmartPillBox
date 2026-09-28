@@ -22,10 +22,7 @@ export type Role = "health-worker" | "patient" | "guardian";
 export type Language = "en" | "ny";
 
 export type SimEvent =
-  | "DOSE_TAKEN_ON_TIME"
-  | "DOSE_TAKEN_LATE"
-  | "MISSED_DOSE_ALERT"
-  | "LOW_BATTERY_WARNING";
+  "DOSE_TAKEN_ON_TIME" | "DOSE_TAKEN_LATE" | "MISSED_DOSE_ALERT" | "LOW_BATTERY_WARNING";
 
 interface TBContextValue {
   today: string;
@@ -73,7 +70,14 @@ export function TBProvider({ children }: { children: ReactNode }) {
     (patientId: string, date: string, status: DoseStatus, source: DoseSource, time: string) => {
       setDoses((prev) => {
         const idx = prev.findIndex((d) => d.patientId === patientId && d.date === date);
-        const entry: DoseEntry = { id: `${patientId}-${date}`, patientId, date, status, source, time };
+        const entry: DoseEntry = {
+          id: `${patientId}-${date}`,
+          patientId,
+          date,
+          status,
+          source,
+          time,
+        };
         if (idx === -1) return [...prev, entry];
         const copy = [...prev];
         copy[idx] = entry;
@@ -106,7 +110,11 @@ export function TBProvider({ children }: { children: ReactNode }) {
       if (event === "DOSE_TAKEN_LATE") upsertDose(patientId, date, "late", "smartbox", clock);
       if (event === "MISSED_DOSE_ALERT") upsertDose(patientId, date, "missed", "none", "--:--");
 
-      if (event === "MISSED_DOSE_ALERT" || event === "LOW_BATTERY_WARNING" || event === "DOSE_TAKEN_LATE") {
+      if (
+        event === "MISSED_DOSE_ALERT" ||
+        event === "LOW_BATTERY_WARNING" ||
+        event === "DOSE_TAKEN_LATE"
+      ) {
         setAlerts((prev) => [
           {
             id: nextId("alert"),
@@ -120,7 +128,11 @@ export function TBProvider({ children }: { children: ReactNode }) {
                   : `Dose logged late at ${clock} (scheduled ${patient.doseTime}).`,
             createdAt: stamp.toISOString(),
             severity:
-              event === "MISSED_DOSE_ALERT" ? "high" : event === "LOW_BATTERY_WARNING" ? "medium" : "low",
+              event === "MISSED_DOSE_ALERT"
+                ? "high"
+                : event === "LOW_BATTERY_WARNING"
+                  ? "medium"
+                  : "low",
             resolved: false,
           },
           ...prev,

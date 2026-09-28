@@ -60,8 +60,8 @@ export function SimulatorDialog() {
         <DialogHeader>
           <DialogTitle>Simulate Smart Box Transmission</DialogTitle>
           <DialogDescription>
-            Push a synthetic SMS from a pill box into the system. Patient calendars, guardian feeds and
-            the triage queue update immediately.
+            Push a synthetic SMS from a pill box into the system. Patient calendars, guardian feeds
+            and the triage queue update immediately.
           </DialogDescription>
         </DialogHeader>
 
