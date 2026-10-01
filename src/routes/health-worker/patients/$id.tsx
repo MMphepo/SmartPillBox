@@ -1,13 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  BatteryWarning,
-  Phone,
-  ShieldCheck,
-  UserCheck,
-  Stethoscope,
-  ClipboardPlus,
-} from "lucide-react";
+import { ArrowLeft, BatteryWarning, Phone, Stethoscope, ClipboardPlus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -32,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { guardians, healthWorkers, patients, type Intervention } from "@/lib/tb-data";
+import { healthWorkers, patients, type Intervention } from "@/lib/tb-data";
 import { useTB } from "@/lib/tb-store";
 
 export const Route = createFileRoute("/health-worker/patients/$id")({
@@ -65,7 +57,6 @@ function HealthWorkerPatientDetail() {
     );
   }
 
-  const g = guardians.find((x) => x.patientId === patient.id);
   const hsa = healthWorkers.find((x) => x.id === patient.hsaId);
   const doses = patientDoses(patient.id);
   const rate = adherenceRate(patient.id);
@@ -77,7 +68,7 @@ function HealthWorkerPatientDetail() {
       patientId: patient.id,
       hsaId: patient.hsaId,
       type,
-      notes: notes || "Follow-up visit/call logged.",
+      notes: notes || "Follow-up visit or consultation logged.",
     });
     setNotes("");
     setModalOpen(false);
@@ -173,49 +164,27 @@ function HealthWorkerPatientDetail() {
         </div>
       </div>
 
-      {/* Triad Information (Guardian & HSA) */}
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <ShieldCheck className="h-4 w-4 text-indigo-600" />
-            <h2 className="font-display text-sm font-bold text-foreground">
-              Designated Guardian / Supporter
-            </h2>
-          </div>
-          {g ? (
-            <div className="text-xs space-y-1.5">
-              <p className="font-semibold text-foreground">{g.name}</p>
-              <p className="text-muted-foreground">Relation: {g.relation}</p>
-              <p className="text-muted-foreground flex items-center gap-1">
-                <Phone className="h-3 w-3" /> {g.phone}
-              </p>
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">No guardian currently assigned.</p>
-          )}
+      {/* Assigned HSA Information */}
+      <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
+        <div className="flex items-center gap-2 border-b border-border pb-2">
+          <Stethoscope className="h-4 w-4 text-primary" />
+          <h2 className="font-display text-sm font-bold text-foreground">
+            Assigned Health Surveillance Assistant
+          </h2>
         </div>
-
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <Stethoscope className="h-4 w-4 text-primary" />
-            <h2 className="font-display text-sm font-bold text-foreground">
-              Assigned Health Surveillance Assistant
-            </h2>
+        {hsa ? (
+          <div className="text-xs space-y-1.5">
+            <p className="font-semibold text-foreground">{hsa.name}</p>
+            <p className="text-muted-foreground">
+              {hsa.role} · {hsa.facility}
+            </p>
+            <p className="text-muted-foreground flex items-center gap-1">
+              <Phone className="h-3 w-3" /> {hsa.phone}
+            </p>
           </div>
-          {hsa ? (
-            <div className="text-xs space-y-1.5">
-              <p className="font-semibold text-foreground">{hsa.name}</p>
-              <p className="text-muted-foreground">
-                {hsa.role} · {hsa.facility}
-              </p>
-              <p className="text-muted-foreground flex items-center gap-1">
-                <Phone className="h-3 w-3" /> {hsa.phone}
-              </p>
-            </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">No HSA assigned.</p>
-          )}
-        </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">No HSA assigned.</p>
+        )}
       </div>
 
       {/* 30-Day Adherence History Calendar */}

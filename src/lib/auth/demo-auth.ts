@@ -1,16 +1,16 @@
 import { User, UserRole } from "./auth-types";
 
-export const DEMO_USERS: Record<string, { user: User; passwordHash: string }> = {
+export const USER_CREDENTIALS: Record<string, { user: User; passwordHash: string }> = {
   healthworker: {
     user: {
       id: "usr-hw-1",
       username: "healthworker",
       name: "HSA John Phiri",
       role: "health_worker",
-      title: "TB Assistant / HSA",
+      title: "TB Assistant / Health Surveillance Assistant",
       facility: "Zomba Central Hospital",
     },
-    passwordHash: "demo123",
+    passwordHash: "moh123",
   },
   patient: {
     user: {
@@ -18,43 +18,44 @@ export const DEMO_USERS: Record<string, { user: User; passwordHash: string }> = 
       username: "patient",
       name: "Chifundo Banda",
       role: "patient",
-      patientId: "pat-1", // Fixed demo patient profile (Chifundo Banda)
+      patientId: "pat-1",
       facility: "Zomba Central Hospital",
     },
-    passwordHash: "demo123",
+    passwordHash: "moh123",
   },
-  guardian: {
+  admin: {
     user: {
-      id: "usr-grd-1",
-      username: "guardian",
-      name: "Mary Banda",
-      role: "guardian",
-      patientId: "pat-1", // Linked relative: Chifundo Banda
+      id: "usr-adm-1",
+      username: "admin",
+      name: "Dr. Mary Chisale",
+      role: "admin",
+      title: "National TB Programme Administrator",
+      facility: "Ministry of Health HQ, Lilongwe",
     },
-    passwordHash: "demo123",
+    passwordHash: "moh123",
   },
 };
 
-export const DEMO_CREDENTIALS_INFO = [
-  {
-    role: "health_worker" as UserRole,
-    title: "Health Worker Portal",
-    username: "healthworker",
-    password: "demo123",
-    description: "Manage cohort, triage missed doses & log field visits",
-  },
+export const PORTAL_CREDENTIALS_INFO = [
   {
     role: "patient" as UserRole,
     title: "Patient Portal",
     username: "patient",
-    password: "demo123",
-    description: "View dose schedule, streak, 180-day regimen & request support",
+    password: "moh123",
+    description: "Track medication schedules, adherence records, and care team contacts",
   },
   {
-    role: "guardian" as UserRole,
-    title: "Guardian Portal",
-    username: "guardian",
-    password: "demo123",
-    description: "Monitor relative's adherence & log assisted doses",
+    role: "health_worker" as UserRole,
+    title: "Health Worker Portal",
+    username: "healthworker",
+    password: "moh123",
+    description: "Manage patient cohorts, triage missed dose alerts, and log field visits",
+  },
+  {
+    role: "admin" as UserRole,
+    title: "Administrator Portal",
+    username: "admin",
+    password: "moh123",
+    description: "Oversee system users, smart pill box hardware deployment, and telemetry logs",
   },
 ];

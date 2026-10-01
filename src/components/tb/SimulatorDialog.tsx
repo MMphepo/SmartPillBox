@@ -50,47 +50,46 @@ export function SimulatorDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="shrink-0">
-          <Radio className="h-4 w-4" />
-          <span className="hidden sm:inline">Simulate Smart Box</span>
-          <span className="sm:hidden">Simulate</span>
+        <Button size="sm" className="shrink-0 w-full justify-start text-xs">
+          <Radio className="h-3.5 w-3.5" />
+          <span>Simulate Hardware Signal</span>
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Simulate Smart Box Transmission</DialogTitle>
+          <DialogTitle>Simulate Smart Box Telemetry Signal</DialogTitle>
           <DialogDescription>
-            Push a synthetic SMS from a pill box into the system. Patient calendars, guardian feeds
-            and the triage queue update immediately.
+            Inject an SMS telemetry packet from a Smart Pill Box. Patient records and clinical
+            triage queues will update instantly.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Patient / Pill Box ID</Label>
+        <div className="space-y-4 text-xs">
+          <div className="space-y-1.5">
+            <Label className="text-xs">Patient / Smart Box Serial</Label>
             <Select value={patientId} onValueChange={setPatientId}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {patients.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>
-                    {p.name} — {p.boxId}
+                  <SelectItem key={p.id} value={p.id} className="text-xs">
+                    {p.name} ({p.boxId})
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label>Event type</Label>
+          <div className="space-y-1.5">
+            <Label className="text-xs">Telemetry Event</Label>
             <Select value={event} onValueChange={(v) => setEvent(v as SimEvent)}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {events.map((e) => (
-                  <SelectItem key={e.value} value={e.value}>
+                  <SelectItem key={e.value} value={e.value} className="text-xs">
                     {e.label}
                   </SelectItem>
                 ))}
@@ -98,13 +97,15 @@ export function SimulatorDialog() {
             </Select>
           </div>
 
-          <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-xs text-muted-foreground">
+          <pre className="overflow-x-auto rounded-lg bg-muted p-2.5 font-mono text-[11px] text-foreground">
             {`SB|${patient.boxId}|EVT:${event}|BAT:${patient.battery}|SIG:4`}
           </pre>
         </div>
 
         <DialogFooter>
-          <Button onClick={run}>Trigger transmission</Button>
+          <Button size="sm" onClick={run} className="text-xs">
+            Transmit Hardware Signal
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

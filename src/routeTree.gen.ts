@@ -10,14 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GuardianRouteImport } from './routes/guardian'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as HealthWorkerRouteImport } from './routes/health-worker'
 import { Route as PatientRouteImport } from './routes/patient'
-import { Route as GuardianIndexRouteImport } from './routes/guardian/index'
-import { Route as GuardianAdherenceRouteImport } from './routes/guardian/adherence'
-import { Route as GuardianAlertsRouteImport } from './routes/guardian/alerts'
-import { Route as GuardianDashboardRouteImport } from './routes/guardian/dashboard'
-import { Route as GuardianPatientRouteImport } from './routes/guardian/patient'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
+import { Route as AdminDevicesRouteImport } from './routes/admin/devices'
+import { Route as AdminLogsRouteImport } from './routes/admin/logs'
+import { Route as AdminUsersRouteImport } from './routes/admin/users'
 import { Route as HealthWorkerIndexRouteImport } from './routes/health-worker/index'
 import { Route as HealthWorkerAdherenceRouteImport } from './routes/health-worker/adherence'
 import { Route as HealthWorkerAlertsRouteImport } from './routes/health-worker/alerts'
@@ -38,9 +38,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuardianRoute = GuardianRouteImport.update({
-  id: '/guardian',
-  path: '/guardian',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HealthWorkerRoute = HealthWorkerRouteImport.update({
@@ -53,30 +53,30 @@ const PatientRoute = PatientRouteImport.update({
   path: '/patient',
   getParentRoute: () => rootRouteImport,
 } as any)
-const GuardianIndexRoute = GuardianIndexRouteImport.update({
+const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => GuardianRoute,
+  getParentRoute: () => AdminRoute,
 } as any)
-const GuardianAdherenceRoute = GuardianAdherenceRouteImport.update({
-  id: '/adherence',
-  path: '/adherence',
-  getParentRoute: () => GuardianRoute,
-} as any)
-const GuardianAlertsRoute = GuardianAlertsRouteImport.update({
-  id: '/alerts',
-  path: '/alerts',
-  getParentRoute: () => GuardianRoute,
-} as any)
-const GuardianDashboardRoute = GuardianDashboardRouteImport.update({
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => GuardianRoute,
+  getParentRoute: () => AdminRoute,
 } as any)
-const GuardianPatientRoute = GuardianPatientRouteImport.update({
-  id: '/patient',
-  path: '/patient',
-  getParentRoute: () => GuardianRoute,
+const AdminDevicesRoute = AdminDevicesRouteImport.update({
+  id: '/devices',
+  path: '/devices',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLogsRoute = AdminLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AdminRoute,
 } as any)
 const HealthWorkerIndexRoute = HealthWorkerIndexRouteImport.update({
   id: '/',
@@ -152,13 +152,13 @@ const HealthWorkerPatientsIdRoute = HealthWorkerPatientsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/guardian': typeof GuardianRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/health-worker': typeof HealthWorkerRouteWithChildren
   '/patient': typeof PatientRouteWithChildren
-  '/guardian/adherence': typeof GuardianAdherenceRoute
-  '/guardian/alerts': typeof GuardianAlertsRoute
-  '/guardian/dashboard': typeof GuardianDashboardRoute
-  '/guardian/patient': typeof GuardianPatientRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/devices': typeof AdminDevicesRoute
+  '/admin/logs': typeof AdminLogsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
   '/health-worker/alerts': typeof HealthWorkerAlertsRoute
   '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
@@ -168,7 +168,7 @@ export interface FileRoutesByFullPath {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/profile': typeof PatientProfileRoute
   '/patient/treatment': typeof PatientTreatmentRoute
-  '/guardian/': typeof GuardianIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/health-worker/': typeof HealthWorkerIndexRoute
   '/login/': typeof LoginIndexRoute
   '/patient/': typeof PatientIndexRoute
@@ -177,10 +177,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/guardian/adherence': typeof GuardianAdherenceRoute
-  '/guardian/alerts': typeof GuardianAlertsRoute
-  '/guardian/dashboard': typeof GuardianDashboardRoute
-  '/guardian/patient': typeof GuardianPatientRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/devices': typeof AdminDevicesRoute
+  '/admin/logs': typeof AdminLogsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
   '/health-worker/alerts': typeof HealthWorkerAlertsRoute
   '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
@@ -190,7 +190,7 @@ export interface FileRoutesByTo {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/profile': typeof PatientProfileRoute
   '/patient/treatment': typeof PatientTreatmentRoute
-  '/guardian': typeof GuardianIndexRoute
+  '/admin': typeof AdminIndexRoute
   '/health-worker': typeof HealthWorkerIndexRoute
   '/login': typeof LoginIndexRoute
   '/patient': typeof PatientIndexRoute
@@ -200,13 +200,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/guardian': typeof GuardianRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/health-worker': typeof HealthWorkerRouteWithChildren
   '/patient': typeof PatientRouteWithChildren
-  '/guardian/adherence': typeof GuardianAdherenceRoute
-  '/guardian/alerts': typeof GuardianAlertsRoute
-  '/guardian/dashboard': typeof GuardianDashboardRoute
-  '/guardian/patient': typeof GuardianPatientRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/devices': typeof AdminDevicesRoute
+  '/admin/logs': typeof AdminLogsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
   '/health-worker/alerts': typeof HealthWorkerAlertsRoute
   '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
@@ -216,7 +216,7 @@ export interface FileRoutesById {
   '/patient/dashboard': typeof PatientDashboardRoute
   '/patient/profile': typeof PatientProfileRoute
   '/patient/treatment': typeof PatientTreatmentRoute
-  '/guardian/': typeof GuardianIndexRoute
+  '/admin/': typeof AdminIndexRoute
   '/health-worker/': typeof HealthWorkerIndexRoute
   '/login/': typeof LoginIndexRoute
   '/patient/': typeof PatientIndexRoute
@@ -227,13 +227,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/guardian'
+    | '/admin'
     | '/health-worker'
     | '/patient'
-    | '/guardian/adherence'
-    | '/guardian/alerts'
-    | '/guardian/dashboard'
-    | '/guardian/patient'
+    | '/admin/dashboard'
+    | '/admin/devices'
+    | '/admin/logs'
+    | '/admin/users'
     | '/health-worker/adherence'
     | '/health-worker/alerts'
     | '/health-worker/dashboard'
@@ -243,7 +243,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/patient/profile'
     | '/patient/treatment'
-    | '/guardian/'
+    | '/admin/'
     | '/health-worker/'
     | '/login/'
     | '/patient/'
@@ -252,10 +252,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/guardian/adherence'
-    | '/guardian/alerts'
-    | '/guardian/dashboard'
-    | '/guardian/patient'
+    | '/admin/dashboard'
+    | '/admin/devices'
+    | '/admin/logs'
+    | '/admin/users'
     | '/health-worker/adherence'
     | '/health-worker/alerts'
     | '/health-worker/dashboard'
@@ -265,7 +265,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/patient/profile'
     | '/patient/treatment'
-    | '/guardian'
+    | '/admin'
     | '/health-worker'
     | '/login'
     | '/patient'
@@ -274,13 +274,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/guardian'
+    | '/admin'
     | '/health-worker'
     | '/patient'
-    | '/guardian/adherence'
-    | '/guardian/alerts'
-    | '/guardian/dashboard'
-    | '/guardian/patient'
+    | '/admin/dashboard'
+    | '/admin/devices'
+    | '/admin/logs'
+    | '/admin/users'
     | '/health-worker/adherence'
     | '/health-worker/alerts'
     | '/health-worker/dashboard'
@@ -290,7 +290,7 @@ export interface FileRouteTypes {
     | '/patient/dashboard'
     | '/patient/profile'
     | '/patient/treatment'
-    | '/guardian/'
+    | '/admin/'
     | '/health-worker/'
     | '/login/'
     | '/patient/'
@@ -300,7 +300,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  GuardianRoute: typeof GuardianRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   HealthWorkerRoute: typeof HealthWorkerRouteWithChildren
   PatientRoute: typeof PatientRouteWithChildren
   LoginRoleRoute: typeof LoginRoleRoute
@@ -316,11 +316,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guardian': {
-      id: '/guardian'
-      path: '/guardian'
-      fullPath: '/guardian'
-      preLoaderRoute: typeof GuardianRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/health-worker': {
@@ -337,40 +337,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PatientRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/guardian/': {
-      id: '/guardian/'
+    '/admin/': {
+      id: '/admin/'
       path: '/'
-      fullPath: '/guardian/'
-      preLoaderRoute: typeof GuardianIndexRouteImport
-      parentRoute: typeof GuardianRoute
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/guardian/adherence': {
-      id: '/guardian/adherence'
-      path: '/adherence'
-      fullPath: '/guardian/adherence'
-      preLoaderRoute: typeof GuardianAdherenceRouteImport
-      parentRoute: typeof GuardianRoute
-    }
-    '/guardian/alerts': {
-      id: '/guardian/alerts'
-      path: '/alerts'
-      fullPath: '/guardian/alerts'
-      preLoaderRoute: typeof GuardianAlertsRouteImport
-      parentRoute: typeof GuardianRoute
-    }
-    '/guardian/dashboard': {
-      id: '/guardian/dashboard'
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
       path: '/dashboard'
-      fullPath: '/guardian/dashboard'
-      preLoaderRoute: typeof GuardianDashboardRouteImport
-      parentRoute: typeof GuardianRoute
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/guardian/patient': {
-      id: '/guardian/patient'
-      path: '/patient'
-      fullPath: '/guardian/patient'
-      preLoaderRoute: typeof GuardianPatientRouteImport
-      parentRoute: typeof GuardianRoute
+    '/admin/devices': {
+      id: '/admin/devices'
+      path: '/devices'
+      fullPath: '/admin/devices'
+      preLoaderRoute: typeof AdminDevicesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/logs': {
+      id: '/admin/logs'
+      path: '/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AdminLogsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/health-worker/': {
       id: '/health-worker/'
@@ -473,25 +473,23 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface GuardianRouteChildren {
-  GuardianAdherenceRoute: typeof GuardianAdherenceRoute
-  GuardianAlertsRoute: typeof GuardianAlertsRoute
-  GuardianDashboardRoute: typeof GuardianDashboardRoute
-  GuardianPatientRoute: typeof GuardianPatientRoute
-  GuardianIndexRoute: typeof GuardianIndexRoute
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminDevicesRoute: typeof AdminDevicesRoute
+  AdminLogsRoute: typeof AdminLogsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
+  AdminIndexRoute: typeof AdminIndexRoute
 }
 
-const GuardianRouteChildren: GuardianRouteChildren = {
-  GuardianAdherenceRoute: GuardianAdherenceRoute,
-  GuardianAlertsRoute: GuardianAlertsRoute,
-  GuardianDashboardRoute: GuardianDashboardRoute,
-  GuardianPatientRoute: GuardianPatientRoute,
-  GuardianIndexRoute: GuardianIndexRoute,
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminDevicesRoute: AdminDevicesRoute,
+  AdminLogsRoute: AdminLogsRoute,
+  AdminUsersRoute: AdminUsersRoute,
+  AdminIndexRoute: AdminIndexRoute,
 }
 
-const GuardianRouteWithChildren = GuardianRoute._addFileChildren(
-  GuardianRouteChildren,
-)
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface HealthWorkerRouteChildren {
   HealthWorkerAdherenceRoute: typeof HealthWorkerAdherenceRoute
@@ -538,7 +536,7 @@ const PatientRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  GuardianRoute: GuardianRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   HealthWorkerRoute: HealthWorkerRouteWithChildren,
   PatientRoute: PatientRouteWithChildren,
   LoginRoleRoute: LoginRoleRoute,

@@ -1,16 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  ShieldCheck,
-  Stethoscope,
-  User,
-  Lock,
-  AlertCircle,
-  ArrowLeft,
-  KeyRound,
-} from "lucide-react";
+import { Stethoscope, User, Lock, AlertCircle, ArrowLeft, KeyRound, Building2 } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
-import { DEMO_CREDENTIALS_INFO } from "@/lib/auth/demo-auth";
+import { PORTAL_CREDENTIALS_INFO } from "@/lib/auth/demo-auth";
 import type { UserRole } from "@/lib/auth/auth-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +15,7 @@ interface LoginFormProps {
 const ROLE_DETAILS = {
   health_worker: {
     title: "Health Worker Portal",
-    subtitle: "Sign in to access cohort triage, patients & SMS telemetry",
+    subtitle: "Sign in to access cohort triage, patients & telemetry",
     icon: Stethoscope,
     defaultRoute: "/health-worker/dashboard",
     demoUsername: "healthworker",
@@ -35,12 +27,12 @@ const ROLE_DETAILS = {
     defaultRoute: "/patient/dashboard",
     demoUsername: "patient",
   },
-  guardian: {
-    title: "Guardian Portal",
-    subtitle: "Sign in to monitor supported patient adherence & assisted doses",
-    icon: ShieldCheck,
-    defaultRoute: "/guardian/patient",
-    demoUsername: "guardian",
+  admin: {
+    title: "Administrator Portal",
+    subtitle: "Sign in to access system users, hardware fleet & audit logs",
+    icon: Building2,
+    defaultRoute: "/admin/dashboard",
+    demoUsername: "admin",
   },
 };
 
@@ -50,11 +42,11 @@ export function LoginForm({ role }: LoginFormProps) {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState(details.demoUsername);
-  const [password, setPassword] = useState("demo123");
+  const [password, setPassword] = useState("moh123");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const demoInfo = DEMO_CREDENTIALS_INFO.find((c) => c.role === role);
+  const demoInfo = PORTAL_CREDENTIALS_INFO.find((c) => c.role === role);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +61,7 @@ export function LoginForm({ role }: LoginFormProps) {
         setError(res.error || "Failed to sign in. Please check your credentials.");
       }
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      setError("An error occurred during authentication.");
     } finally {
       setIsSubmitting(false);
     }
@@ -92,8 +84,8 @@ export function LoginForm({ role }: LoginFormProps) {
           <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary">
             <Icon className="h-6 w-6" />
           </div>
-          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Ministry of Health · Malawi
+          <p className="mt-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Government of Malawi · Ministry of Health
           </p>
           <h1 className="mt-1 font-display text-xl font-bold text-foreground sm:text-2xl">
             {details.title}
@@ -101,12 +93,12 @@ export function LoginForm({ role }: LoginFormProps) {
           <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{details.subtitle}</p>
         </div>
 
-        {/* Demo Credentials Box */}
+        {/* Credentials Box */}
         {demoInfo && (
           <div className="mt-6 rounded-lg border border-primary/20 bg-primary/5 p-3.5 text-xs">
             <div className="flex items-center gap-1.5 font-semibold text-primary">
               <KeyRound className="h-3.5 w-3.5" />
-              <span>Demo Credentials</span>
+              <span>Sign-In Credentials</span>
             </div>
             <div className="mt-2 grid grid-cols-2 gap-2 font-mono text-[11px] text-foreground">
               <div>
@@ -181,8 +173,8 @@ export function LoginForm({ role }: LoginFormProps) {
         </form>
 
         <div className="mt-6 border-t border-border pt-4 text-center">
-          <p className="text-[11px] text-muted-foreground">
-            Smart Pill Box Programme · Digital Health Division
+          <p className="text-[10px] text-muted-foreground">
+            Smart Pill Box System · Ministry of Health Malawi
           </p>
         </div>
       </div>

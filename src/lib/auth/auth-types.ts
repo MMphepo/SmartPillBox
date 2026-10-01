@@ -1,4 +1,4 @@
-export type UserRole = "health_worker" | "patient" | "guardian";
+export type UserRole = "health_worker" | "patient" | "admin";
 
 export interface User {
   id: string;
@@ -7,7 +7,7 @@ export interface User {
   role: UserRole;
   title?: string;
   facility?: string;
-  patientId?: string; // For patient and guardian roles, bound to specific demo patient
+  patientId?: string; // For patient role, bound to specific patient profile
 }
 
 export interface AuthSession {

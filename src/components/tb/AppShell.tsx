@@ -45,7 +45,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-4 sm:px-6">
             <span className="flex items-center gap-1.5">
               <Radio className="h-3.5 w-3.5 text-primary" />
-              Smart Pill Box Telemetry Gateway · Operational Demo
+              Smart Pill Box Telemetry Gateway · National Network
             </span>
             <span>Government of Malawi · Ministry of Health</span>
           </div>

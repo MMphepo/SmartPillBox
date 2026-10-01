@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Filter, ClipboardPlus, Eye } from "lucide-react";
+import { Search, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { facilities, guardians, patients } from "@/lib/tb-data";
+import { facilities, patients } from "@/lib/tb-data";
 import { useTB } from "@/lib/tb-store";
 import { AdherenceLegend } from "@/components/tb/AdherenceCalendar";
 
@@ -131,20 +131,18 @@ function HealthWorkerPatientsIndex() {
                 <TableHead className="text-xs font-semibold">Box Serial</TableHead>
                 <TableHead className="text-xs font-semibold">Battery</TableHead>
                 <TableHead className="text-xs font-semibold">30-Day Adherence</TableHead>
-                <TableHead className="text-xs font-semibold">Guardian</TableHead>
                 <TableHead className="text-xs font-semibold text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredPatients.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-xs text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
                     No patients match the selected search criteria.
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredPatients.map((p) => {
-                  const g = guardians.find((x) => x.patientId === p.id)!;
                   const rate = adherenceRate(p.id);
                   return (
                     <TableRow key={p.id} className="hover:bg-muted/30 transition-colors">
@@ -188,13 +186,10 @@ function HealthWorkerPatientsIndex() {
                           <span className="font-medium">{rate}%</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        {g ? `${g.name} (${g.relation})` : "Unassigned"}
-                      </TableCell>
                       <TableCell className="text-right text-xs">
                         <Button asChild size="sm" variant="outline" className="h-7 text-xs">
                           <Link to="/health-worker/patients/$id" params={{ id: p.id }}>
-                            <Eye className="mr-1 h-3 w-3" /> View Detail
+                            <Eye className="mr-1 h-3 w-3" /> View Record
                           </Link>
                         </Button>
                       </TableCell>

@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { AuthSession, LoginCredentials, User } from "./auth-types";
-import { DEMO_USERS } from "./demo-auth";
+import { USER_CREDENTIALS } from "./demo-auth";
 
 const STORAGE_KEY = "malawi_tb_portal_session";
 
@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
     } catch (e) {
-      console.error("Failed to restore session from localStorage", e);
+      console.error("Failed to restore session", e);
     } finally {
       setIsLoading(false);
     }
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async ({ username, password, role }: LoginCredentials) => {
     const normalizedUsername = username.trim().toLowerCase();
-    const entry = DEMO_USERS[normalizedUsername];
+    const entry = USER_CREDENTIALS[normalizedUsername];
 
     if (!entry) {
       return { success: false, error: "Invalid username or password." };
@@ -52,13 +52,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (role && entry.user.role !== role) {
       return {
         success: false,
-        error: `Account '${username}' does not have the '${role}' role.`,
+        error: `Account '${username}' is not authorized for the ${role} portal.`,
       };
     }
 
     const newSession: AuthSession = {
       user: entry.user,
-      token: `demo-token-${entry.user.id}-${Date.now()}`,
+      token: `auth-session-${entry.user.id}-${Date.now()}`,
     };
 
     setSession(newSession);
