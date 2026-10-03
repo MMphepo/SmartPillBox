@@ -9,7 +9,6 @@ import {
   Menu,
   X,
   Globe2,
-  Building2,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -26,9 +25,9 @@ import {
 
 const NAV_ITEMS = [
   { to: "/patient/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/patient/treatment", label: "My Treatment", icon: Pill },
-  { to: "/patient/adherence", label: "30-Day Calendar", icon: CalendarDays },
-  { to: "/patient/profile", label: "Profile & HSA Info", icon: UserCheck },
+  { to: "/patient/treatment", label: "Treatment", icon: Pill },
+  { to: "/patient/adherence", label: "Calendar", icon: CalendarDays },
+  { to: "/patient/profile", label: "Profile", icon: UserCheck },
 ];
 
 export function PatientShell({ children }: { children: ReactNode }) {
@@ -39,41 +38,29 @@ export function PatientShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      {/* Top Ministry Accent Line */}
       <div className="moh-flagline h-1.5 w-full shrink-0" />
 
       <div className="flex flex-1 flex-col md:flex-row">
         {/* Sidebar Navigation - Desktop */}
-        <aside className="hidden w-64 shrink-0 border-r border-border bg-card md:flex md:flex-col justify-between">
+        <aside className="hidden w-56 shrink-0 border-r border-border bg-card md:flex md:flex-col justify-between">
           <div>
             <div className="border-b border-border p-4">
-              <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-600 text-white font-bold shadow-2xs">
-                  <User className="h-5 w-5" />
+              <div className="flex items-center gap-2.5">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-600 text-white font-bold shadow-2xs">
+                  <User className="h-4 w-4" />
                 </div>
                 <div className="min-w-0">
-                  <span className="block truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Ministry of Health
-                  </span>
                   <span className="block truncate font-display text-sm font-bold text-foreground">
                     Patient Portal
                   </span>
+                  <span className="block truncate text-[11px] text-muted-foreground">
+                    {user?.name || "Chifundo Banda"}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="border-b border-border bg-muted/40 px-4 py-3 text-xs">
-              <p className="font-bold text-foreground truncate">{user?.name || "Chifundo Banda"}</p>
-              <p className="text-muted-foreground truncate flex items-center gap-1 mt-0.5">
-                <Building2 className="h-3 w-3 text-emerald-600 shrink-0" />
-                <span>{user?.facility || "Zomba Central Hospital"}</span>
-              </p>
-            </div>
-
-            <nav className="p-3 space-y-1">
-              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                My Treatment Care
-              </div>
+            <nav className="p-2.5 space-y-1">
               {NAV_ITEMS.map((item) => {
                 const isActive =
                   pathname === item.to ||
@@ -84,7 +71,7 @@ export function PatientShell({ children }: { children: ReactNode }) {
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold transition-colors",
+                      "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors",
                       isActive
                         ? "bg-emerald-600 text-white shadow-2xs"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -98,10 +85,10 @@ export function PatientShell({ children }: { children: ReactNode }) {
             </nav>
           </div>
 
-          <div className="border-t border-border p-3 space-y-3 bg-card">
+          <div className="border-t border-border p-3 space-y-2.5 bg-card">
             <div className="space-y-1 px-1">
               <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <Globe2 className="h-3 w-3" /> Language / Chilankhulo
+                <Globe2 className="h-3 w-3" /> Language
               </label>
               <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
                 <SelectTrigger className="h-8 text-xs font-medium">
@@ -132,37 +119,26 @@ export function PatientShell({ children }: { children: ReactNode }) {
 
         {/* Mobile Header */}
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3 md:hidden">
-          <div className="flex items-center gap-2.5 min-w-0">
+          <div className="flex items-center gap-2 min-w-0">
             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-600 text-white font-bold">
               <User className="h-4 w-4" />
             </div>
-            <div className="min-w-0">
-              <span className="block truncate font-display text-sm font-bold">Patient Portal</span>
-              <span className="block truncate text-[10px] text-muted-foreground">
-                {user?.name || "Chifundo Banda"}
-              </span>
-            </div>
+            <span className="truncate font-display text-sm font-bold">Patient Portal</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-9 w-9"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="h-9 w-9"
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </header>
 
-        {/* Mobile Dropdown Drawer */}
+        {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
           <div className="border-b border-border bg-card p-4 md:hidden space-y-3 z-30">
-            <div className="text-xs border-b border-border pb-2">
-              <p className="font-bold text-foreground">{user?.name}</p>
-              <p className="text-muted-foreground">{user?.facility}</p>
-            </div>
             <nav className="space-y-1">
               {NAV_ITEMS.map((item) => {
                 const isActive =
@@ -175,7 +151,7 @@ export function PatientShell({ children }: { children: ReactNode }) {
                     to={item.to}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold",
+                      "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold",
                       isActive
                         ? "bg-emerald-600 text-white"
                         : "text-muted-foreground hover:bg-muted",
@@ -188,24 +164,19 @@ export function PatientShell({ children }: { children: ReactNode }) {
               })}
             </nav>
             <div className="pt-2 border-t border-border flex flex-col gap-2">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase text-muted-foreground">
-                  Language / Chilankhulo
-                </label>
-                <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                  <SelectTrigger className="h-8 text-xs font-medium">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en" className="text-xs">
-                      English
-                    </SelectItem>
-                    <SelectItem value="ny" className="text-xs">
-                      Chichewa
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
+                <SelectTrigger className="h-8 text-xs font-medium">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en" className="text-xs">
+                    English
+                  </SelectItem>
+                  <SelectItem value="ny" className="text-xs">
+                    Chichewa
+                  </SelectItem>
+                </SelectContent>
+              </Select>
               <Button
                 variant="outline"
                 size="sm"
@@ -223,7 +194,7 @@ export function PatientShell({ children }: { children: ReactNode }) {
         )}
 
         {/* Main Content Workspace */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-6xl mx-auto w-full">
           {children}
         </main>
       </div>

@@ -68,32 +68,26 @@ function HealthWorkerDashboard() {
       patientId: modalPatient,
       hsaId: patient.hsaId,
       type,
-      notes: notes || "Routine follow-up action logged from operational dashboard.",
+      notes: notes || "Follow-up action logged.",
     });
     setNotes("");
     setModalPatient(null);
-    toast.success("Field intervention entry saved", { description: `${type} · ${patient.name}` });
+    toast.success("Action saved", { description: `${type} · ${patient.name}` });
   };
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <header className="border-b border-border pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Header */}
+      <header className="border-b border-border pb-4 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-            Clinical Operations Dashboard
-          </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Logged in as <strong>{user?.name || "HSA John Phiri"}</strong> (
-            {user?.facility || "Zomba Central Hospital"})
-          </p>
+          <h1 className="font-display text-2xl font-bold text-foreground">Clinical Operations</h1>
         </div>
         <div className="flex items-center gap-2">
           <Badge
             variant={openAlerts.length > 0 ? "destructive" : "secondary"}
             className="text-xs font-bold px-3 py-1"
           >
-            {openAlerts.length} Active Triage Alerts
+            {openAlerts.length} Alerts
           </Badge>
           <Button
             size="sm"
@@ -101,70 +95,47 @@ function HealthWorkerDashboard() {
             className="text-xs font-bold"
           >
             <ClipboardPlus className="mr-1.5 h-3.5 w-3.5" />
-            Log Action Entry
+            Log Action
           </Button>
         </div>
       </header>
 
       {/* Cohort KPI Metrics */}
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Cohort Size" value={patients.length} icon={Users} />
+        <StatCard label="Adherence" value={`${cohortAdherence}%`} icon={Activity} tone="success" />
         <StatCard
-          label="Enrolled Cohort"
-          value={patients.length}
-          icon={Users}
-          hint="Across facility catchments"
-        />
-        <StatCard
-          label="Cohort Adherence"
-          value={`${cohortAdherence}%`}
-          icon={Activity}
-          tone="success"
-          hint="30-day cohort average"
-        />
-        <StatCard
-          label="Open Missed Dose Alerts"
+          label="Open Alerts"
           value={openAlerts.filter((a) => a.kind === "MISSED_DOSE_ALERT").length}
           icon={AlertTriangle}
           tone="danger"
-          hint="Requires HSA community visit"
         />
         <StatCard
-          label="Average Box Battery"
+          label="Avg Battery"
           value={`${avgBattery}%`}
           icon={BatteryWarning}
           tone="warning"
-          hint="Smart pill box hardware power"
         />
       </section>
 
       {/* Triage Queue & Live Telemetry Section */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Urgent Priority Triage Queue (2 cols) */}
+        {/* Triage Queue (2 cols) */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between border-b border-border pb-3">
-            <div>
-              <h2 className="font-display text-base font-bold text-foreground">
-                Priority Missed-Dose Triage Queue
-              </h2>
-              <p className="text-xs text-muted-foreground">
-                Ranked by severity for immediate clinical or community intervention
-              </p>
-            </div>
+            <h2 className="font-display text-base font-bold text-foreground">Triage Queue</h2>
             <Link
               to="/health-worker/alerts"
               className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
             >
-              All Alerts ({alerts.length}) <ArrowRight className="h-3.5 w-3.5" />
+              All ({alerts.length}) <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
 
           {triage.length === 0 ? (
-            <div className="rounded-xl border border-border bg-card p-8 text-center shadow-sm">
+            <div className="rounded-2xl border border-border bg-card p-8 text-center shadow-2xs">
               <CheckCircle2 className="mx-auto h-8 w-8 text-emerald-500" />
-              <h3 className="mt-2 text-sm font-bold text-foreground">Cohort Fully Triaged</h3>
-              <p className="mt-1 text-xs text-muted-foreground">
-                There are no open unresolved alerts at this time. All patients are up-to-date.
-              </p>
+              <p className="mt-2 text-sm font-bold text-foreground">No Pending Alerts</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -173,9 +144,9 @@ function HealthWorkerDashboard() {
                 return (
                   <div
                     key={a.id}
-                    className="rounded-xl border border-border bg-card p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    className="rounded-2xl border border-border bg-card p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
-                    <div className="space-y-1.5 min-w-0">
+                    <div className="space-y-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
                           to="/health-worker/patients/$id"
@@ -185,24 +156,13 @@ function HealthWorkerDashboard() {
                           {p.name}
                         </Link>
                         <Badge
-                          variant={p.phase === "Intensive" ? "destructive" : "secondary"}
-                          className="text-[10px] font-bold"
-                        >
-                          {p.phase} Phase
-                        </Badge>
-                        <Badge
                           variant={a.severity === "high" ? "destructive" : "outline"}
                           className="text-[10px] uppercase font-bold"
                         >
                           {a.kind.replaceAll("_", " ")}
                         </Badge>
                       </div>
-                      <p className="text-xs text-muted-foreground leading-snug">{a.message}</p>
-                      <p className="text-[11px] text-muted-foreground font-medium">
-                        Serial:{" "}
-                        <span className="font-mono font-bold text-foreground">{p.boxId}</span> ·{" "}
-                        {p.facility} · Day {p.treatmentDay} of 180
-                      </p>
+                      <p className="text-xs text-muted-foreground">{a.message}</p>
                     </div>
 
                     <div className="flex items-center gap-2 shrink-0 border-t border-border pt-2 sm:border-0 sm:pt-0">
@@ -212,13 +172,13 @@ function HealthWorkerDashboard() {
                         onClick={() => setModalPatient(p.id)}
                         className="text-xs font-semibold h-8"
                       >
-                        <ClipboardPlus className="mr-1 h-3.5 w-3.5" /> Log Visit
+                        <ClipboardPlus className="mr-1 h-3.5 w-3.5" /> Log
                       </Button>
                       <Button
                         size="sm"
                         onClick={() => {
                           resolveAlert(a.id);
-                          toast.success("Alert marked as resolved");
+                          toast.success("Resolved");
                         }}
                         className="text-xs font-bold h-8"
                       >
@@ -232,20 +192,15 @@ function HealthWorkerDashboard() {
           )}
         </div>
 
-        {/* Live SMS Telemetry Stream (1 col) */}
+        {/* Live SMS Telemetry Feed (1 col) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-border pb-3">
-            <div>
-              <h2 className="font-display text-base font-bold text-foreground">
-                Live SMS Telemetry Feed
-              </h2>
-              <p className="text-xs text-muted-foreground">Inbound smart pill box data packets</p>
-            </div>
+            <h2 className="font-display text-base font-bold text-foreground">Telemetry Feed</h2>
             <Link
               to="/health-worker/adherence"
               className="text-xs font-bold text-primary hover:underline"
             >
-              Full Feed →
+              Feed →
             </Link>
           </div>
 
@@ -253,21 +208,13 @@ function HealthWorkerDashboard() {
             {telemetry.slice(0, 5).map((t) => (
               <div
                 key={t.id}
-                className="rounded-xl border border-border bg-card p-3.5 text-xs space-y-1.5 shadow-xs"
+                className="rounded-2xl border border-border bg-card p-3.5 text-xs space-y-1 shadow-2xs"
               >
                 <div className="flex items-center justify-between gap-1">
                   <span className="font-mono font-bold text-foreground flex items-center gap-1.5">
-                    <Radio className="h-3 w-3 text-emerald-600 animate-pulse" />
+                    <Radio className="h-3 w-3 text-emerald-600 shrink-0" />
                     {t.boxId}
                   </span>
-                  <span className="text-[10px] font-medium text-muted-foreground">
-                    {new Date(t.receivedAt).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
                   <Badge
                     variant={t.event === "MISSED_DOSE_ALERT" ? "destructive" : "secondary"}
                     className="text-[10px] font-bold"
@@ -289,8 +236,8 @@ function HealthWorkerDashboard() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Log Field Intervention</DialogTitle>
-            <DialogDescription>
-              Record a home visit, phone check-in, pill resupply, or counselling session.
+            <DialogDescription className="text-xs">
+              Record a visit, call, resupply, or counselling note.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2 text-xs">
@@ -310,7 +257,7 @@ function HealthWorkerDashboard() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Intervention Type</Label>
+              <Label className="text-xs font-semibold">Type</Label>
               <Select value={type} onValueChange={(v) => setType(v as Intervention["type"])}>
                 <SelectTrigger className="text-xs h-9">
                   <SelectValue />
@@ -326,24 +273,24 @@ function HealthWorkerDashboard() {
                     Pill Resupply
                   </SelectItem>
                   <SelectItem value="Counselling" className="text-xs">
-                    Counselling Session
+                    Counselling
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Clinical / Field Notes</Label>
+              <Label className="text-xs font-semibold">Notes</Label>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Details of observations, treatment progress, or agreed action plan..."
-                className="text-xs min-h-[90px]"
+                placeholder="Intervention details..."
+                className="text-xs min-h-[80px]"
               />
             </div>
           </div>
           <DialogFooter>
             <Button size="sm" onClick={submitIntervention} className="text-xs font-bold">
-              Save Field Action Entry
+              Save
             </Button>
           </DialogFooter>
         </DialogContent>

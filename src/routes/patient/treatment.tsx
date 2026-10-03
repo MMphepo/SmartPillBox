@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Pill, AlertOctagon, LifeBuoy, Radio, BatteryMedium, Building2, Clock } from "lucide-react";
+import { Pill, AlertOctagon, LifeBuoy, Radio, Clock, Building2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -27,23 +27,16 @@ export function PatientTreatment() {
   return (
     <div className="space-y-6">
       <header className="border-b border-border pb-4">
-        <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-          My Treatment Regimen
-        </h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Detailed clinical overview of your 180-day course, phase transitions, and smart pill box
-        </p>
+        <h1 className="font-display text-2xl font-bold text-foreground">Treatment Regimen</h1>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Regimen Clinical Card */}
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+        {/* Regimen Card */}
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4">
           <div className="flex items-center justify-between border-b border-border pb-3">
             <div className="flex items-center gap-2">
               <Pill className="h-5 w-5 text-emerald-600 shrink-0" />
-              <h2 className="font-display text-base font-bold text-foreground">
-                Regimen Specifications
-              </h2>
+              <h2 className="font-display text-base font-bold text-foreground">Specifications</h2>
             </div>
             <Badge
               variant={patient.phase === "Intensive" ? "destructive" : "secondary"}
@@ -53,30 +46,26 @@ export function PatientTreatment() {
             </Badge>
           </div>
 
-          <div className="space-y-3 text-xs">
+          <div className="space-y-2.5 text-xs">
             <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium">Standard Regimen:</span>
+              <span className="text-muted-foreground font-medium">Standard Regimen</span>
               <strong className="text-foreground font-bold">{patient.regimen}</strong>
             </div>
             <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium">Treatment Phase:</span>
-              <strong className="text-foreground font-semibold">{patient.phase} Phase</strong>
-            </div>
-            <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium">Progress Day:</span>
+              <span className="text-muted-foreground font-medium">Progress</span>
               <strong className="text-foreground font-semibold">
                 Day {patient.treatmentDay} of {REGIMEN_DAYS}
               </strong>
             </div>
             <div className="flex justify-between items-center py-1 border-b border-border">
               <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5 text-primary" /> Daily Dose Window:
+                <Clock className="h-3.5 w-3.5 text-primary" /> Daily Window
               </span>
               <strong className="text-foreground font-semibold">{patient.doseTime}</strong>
             </div>
             <div className="flex justify-between items-center py-1">
               <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <Building2 className="h-3.5 w-3.5 text-primary" /> Assigned Facility:
+                <Building2 className="h-3.5 w-3.5 text-primary" /> Facility
               </span>
               <strong className="text-foreground font-semibold">{patient.facility}</strong>
             </div>
@@ -84,39 +73,35 @@ export function PatientTreatment() {
         </div>
 
         {/* Smart Pill Box Details */}
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <div className="flex items-center gap-2">
-              <Radio className="h-5 w-5 text-primary shrink-0" />
-              <h2 className="font-display text-base font-bold text-foreground">
-                Smart Pill Box Telemetry
-              </h2>
+        <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <Radio className="h-5 w-5 text-primary shrink-0" />
+                <h2 className="font-display text-base font-bold text-foreground">Smart Pill Box</h2>
+              </div>
+              <Badge variant="secondary" className="text-[10px] font-bold">
+                Connected
+              </Badge>
             </div>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-              Connected
-            </span>
-          </div>
 
-          <div className="space-y-3 text-xs">
-            <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium">Pill Box Serial Number:</span>
-              <strong className="font-mono text-foreground font-bold">{patient.boxId}</strong>
-            </div>
-            <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <BatteryMedium className="h-3.5 w-3.5" /> Battery Status:
-              </span>
-              <strong
-                className={
-                  patient.battery < 30 ? "text-destructive font-bold" : "text-emerald-600 font-bold"
-                }
-              >
-                {patient.battery}% Remaining
-              </strong>
-            </div>
-            <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium">Gateway Protocol:</span>
-              <strong className="text-foreground font-semibold">GSM / SMS Telemetry</strong>
+            <div className="space-y-2.5 text-xs mt-3">
+              <div className="flex justify-between items-center py-1 border-b border-border">
+                <span className="text-muted-foreground font-medium">Box Serial</span>
+                <strong className="font-mono text-foreground font-bold">{patient.boxId}</strong>
+              </div>
+              <div className="flex justify-between items-center py-1 border-b border-border">
+                <span className="text-muted-foreground font-medium">Battery</span>
+                <strong
+                  className={
+                    patient.battery < 30
+                      ? "text-destructive font-bold"
+                      : "text-emerald-600 font-bold"
+                  }
+                >
+                  {patient.battery}%
+                </strong>
+              </div>
             </div>
           </div>
 
@@ -126,40 +111,40 @@ export function PatientTreatment() {
               variant="outline"
               onClick={() => {
                 raisePatientRequest(patient.id, "SUPPORT_REQUEST");
-                toast.success(`Support request dispatched to HSA ${hsa.name}`);
+                toast.success(`Request sent to HSA ${hsa.name}`);
               }}
               className="text-xs font-semibold flex-1 justify-center"
             >
-              <LifeBuoy className="mr-1.5 h-3.5 w-3.5" /> Request HSA Clinical Support
+              <LifeBuoy className="mr-1.5 h-3.5 w-3.5" /> Request Support
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => {
                 raisePatientRequest(patient.id, "BOX_ISSUE");
-                toast.success("Box issue reported to facility clinic.");
+                toast.success("Problem reported.");
               }}
-              className="text-xs font-semibold text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-950/40 flex-1 justify-center"
+              className="text-xs font-semibold flex-1 justify-center"
             >
-              <AlertOctagon className="mr-1.5 h-3.5 w-3.5" /> Report Hardware Issue
+              <AlertOctagon className="mr-1.5 h-3.5 w-3.5" /> Report Issue
             </Button>
           </div>
         </div>
       </div>
 
       {/* Timeline Section */}
-      <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
+      <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-3">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-base font-bold text-foreground">
-            180-Day Regimen Phase Timeline
+            180-Day Regimen Progress
           </h2>
-          <span className="text-xs font-bold text-muted-foreground">{progress}% Completed</span>
+          <span className="text-xs font-bold text-muted-foreground">{progress}%</span>
         </div>
-        <Progress value={progress} className="h-3" />
+        <Progress value={progress} className="h-2.5" />
         <div className="flex justify-between text-xs font-medium text-muted-foreground pt-1">
-          <span>Intensive Phase (Day 1 – Day {PHASE_BOUNDARY_DAY})</span>
+          <span>Intensive (Days 1–{PHASE_BOUNDARY_DAY})</span>
           <span>
-            Continuation Phase (Day {PHASE_BOUNDARY_DAY + 1} – Day {REGIMEN_DAYS})
+            Continuation (Days {PHASE_BOUNDARY_DAY + 1}–{REGIMEN_DAYS})
           </span>
         </div>
       </div>

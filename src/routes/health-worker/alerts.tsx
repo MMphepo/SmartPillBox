@@ -26,7 +26,7 @@ import { useTB } from "@/lib/tb-store";
 
 export const Route = createFileRoute("/health-worker/alerts")({
   head: () => ({
-    meta: [{ title: "Alerts & Triage Queue — Health Worker Portal" }],
+    meta: [{ title: "Triage Queue — Health Worker Portal" }],
   }),
   component: HealthWorkerAlerts,
 });
@@ -47,11 +47,11 @@ function HealthWorkerAlerts() {
       patientId: modalPatient,
       hsaId: patient.hsaId,
       type,
-      notes: notes || "Triage follow-up intervention logged.",
+      notes: notes || "Triage action logged.",
     });
     setNotes("");
     setModalPatient(null);
-    toast.success("Field action logged", { description: `${type} · ${patient.name}` });
+    toast.success("Action logged", { description: `${type} · ${patient.name}` });
   };
 
   return (
@@ -59,34 +59,33 @@ function HealthWorkerAlerts() {
       <header className="border-b border-border pb-4 flex items-center justify-between">
         <div>
           <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-            Missed-Dose & Hardware Triage Queue
+            Triage Queue
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            System-generated alerts for missed doses, low box batteries, and patient assistance
-            requests
+            Active alerts requiring clinical action or patient contact
           </p>
         </div>
         <Badge
           variant={unresolved.length > 0 ? "destructive" : "secondary"}
-          className="text-xs font-bold px-3 py-1"
+          className="text-xs font-semibold px-2.5 py-0.5"
         >
           {unresolved.length} Unresolved
         </Badge>
       </header>
 
-      {/* Unresolved Active Alerts */}
+      {/* Unresolved Alerts */}
       <section className="space-y-3">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Unresolved Priority Alerts ({unresolved.length})
+        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          Active Alerts ({unresolved.length})
         </h2>
         {unresolved.length === 0 ? (
           <div className="rounded-xl border border-border bg-card p-10 text-center shadow-sm">
             <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="h-6 w-6" />
             </div>
-            <h3 className="mt-3 text-base font-bold text-foreground">All Alerts Fully Triaged</h3>
+            <h3 className="mt-3 text-sm font-semibold text-foreground">Queue Empty</h3>
             <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto">
-              There are currently no active unresolved alerts requiring health worker follow-up.
+              All triage alerts have been reviewed and resolved.
             </p>
           </div>
         ) : (
@@ -95,9 +94,9 @@ function HealthWorkerAlerts() {
             return (
               <div
                 key={a.id}
-                className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="rounded-xl border border-border bg-card p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
-                <div className="space-y-1.5 min-w-0">
+                <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <AlertTriangle
                       className={`h-4 w-4 shrink-0 ${a.severity === "high" ? "text-destructive" : "text-amber-500"}`}
@@ -105,21 +104,21 @@ function HealthWorkerAlerts() {
                     <Link
                       to="/health-worker/patients/$id"
                       params={{ id: p.id }}
-                      className="font-bold text-sm text-foreground hover:underline"
+                      className="font-semibold text-sm text-foreground hover:underline"
                     >
                       {p.name}
                     </Link>
                     <Badge
                       variant={a.severity === "high" ? "destructive" : "outline"}
-                      className="text-[10px] uppercase font-bold"
+                      className="text-[10px] uppercase font-semibold"
                     >
                       {a.kind.replaceAll("_", " ")}
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">{a.message}</p>
-                  <p className="text-[11px] text-muted-foreground font-medium">
-                    Facility: {p.facility} · Pill Box:{" "}
-                    <span className="font-mono font-bold text-foreground">{p.boxId}</span>
+                  <p className="text-[11px] text-muted-foreground">
+                    Facility: {p.facility} · Box ID:{" "}
+                    <span className="font-mono text-foreground">{p.boxId}</span>
                   </p>
                 </div>
 
@@ -128,19 +127,19 @@ function HealthWorkerAlerts() {
                     size="sm"
                     variant="outline"
                     onClick={() => setModalPatient(p.id)}
-                    className="text-xs font-semibold h-8"
+                    className="text-xs h-8"
                   >
-                    <ClipboardPlus className="mr-1.5 h-3.5 w-3.5" /> Log Visit / Call
+                    <ClipboardPlus className="mr-1.5 h-3.5 w-3.5" /> Log Action
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => {
                       resolveAlert(a.id);
-                      toast.success("Alert marked as resolved");
+                      toast.success("Alert resolved");
                     }}
-                    className="text-xs font-bold h-8"
+                    className="text-xs font-semibold h-8"
                   >
-                    Resolve Alert
+                    Resolve
                   </Button>
                 </div>
               </div>
@@ -149,13 +148,13 @@ function HealthWorkerAlerts() {
         )}
       </section>
 
-      {/* Resolved Alert History */}
+      {/* Resolved History */}
       {resolved.length > 0 && (
-        <section className="space-y-3 pt-6 border-t border-border">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Resolved Alert History ({resolved.length})
+        <section className="space-y-3 pt-4 border-t border-border">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Resolved ({resolved.length})
           </h2>
-          <div className="space-y-2 opacity-85">
+          <div className="space-y-2 opacity-80">
             {resolved.map((a) => {
               const p = patients.find((x) => x.id === a.patientId)!;
               return (
@@ -164,10 +163,10 @@ function HealthWorkerAlerts() {
                   className="rounded-lg border border-border bg-muted/30 p-3 text-xs flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
-                    <span className="font-bold text-foreground">{p?.name}</span>:{" "}
+                    <span className="font-semibold text-foreground">{p?.name}</span>:{" "}
                     <span className="text-muted-foreground">{a.message}</span>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] font-semibold shrink-0">
+                  <Badge variant="secondary" className="text-[10px] shrink-0">
                     Resolved
                   </Badge>
                 </div>
@@ -177,14 +176,12 @@ function HealthWorkerAlerts() {
         </section>
       )}
 
-      {/* Log Triage Action Modal */}
+      {/* Log Action Dialog */}
       <Dialog open={modalPatient !== null} onOpenChange={(o) => !o && setModalPatient(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Log Triage Follow-up Action</DialogTitle>
-            <DialogDescription>
-              Record a home visit, phone consultation, or counselling note for this alert.
-            </DialogDescription>
+            <DialogTitle>Log Action</DialogTitle>
+            <DialogDescription>Record follow-up action for this alert.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2 text-xs">
             <div className="space-y-1.5">
@@ -210,18 +207,18 @@ function HealthWorkerAlerts() {
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Clinical Notes</Label>
+              <Label className="text-xs font-semibold">Notes</Label>
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Details of observations or action taken..."
-                className="text-xs min-h-[90px]"
+                placeholder="Details of action taken..."
+                className="text-xs min-h-[80px]"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button size="sm" onClick={submitIntervention} className="text-xs font-bold">
-              Save Action
+            <Button size="sm" onClick={submitIntervention} className="text-xs font-semibold">
+              Save Record
             </Button>
           </DialogFooter>
         </DialogContent>
