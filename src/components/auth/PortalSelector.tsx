@@ -3,7 +3,6 @@ import {
   Building2,
   Stethoscope,
   User,
-  ShieldCheck,
   ArrowRight,
   Activity,
   CheckCircle2,
@@ -49,31 +48,13 @@ const PORTALS = [
     badgeBg:
       "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-400 dark:border-emerald-800",
   },
-  {
-    role: "guardian" as UserRole,
-    loginPath: "/login/guardian",
-    appPath: "/guardian/patient",
-    icon: ShieldCheck,
-    title: "Guardian Portal",
-    subtitle: "Treatment Supporters & Family Caregivers",
-    description:
-      "Community supporter module enabling designated relatives to verify daily medication adherence, log assisted doses, and stay connected with assigned health surveillance assistants.",
-    features: [
-      "Relative Adherence & Dosing Status",
-      "1-Tap Assisted Dose Logger",
-      "Direct HSA Contact & SMS Links",
-    ],
-    accentColor: "border-indigo-500/30 hover:border-indigo-500",
-    badgeBg:
-      "bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-400 dark:border-indigo-800",
-  },
 ];
 
 export function PortalSelector() {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 py-2 sm:py-6">
+    <div className="mx-auto max-w-5xl space-y-8 py-2 sm:py-6">
       {/* Official Government Banner Header */}
       <section className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-sm relative overflow-hidden">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-6">
@@ -105,8 +86,8 @@ export function PortalSelector() {
           </h2>
           <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
             Centralized digital health platform integrating smart pill box SMS telemetry, clinical
-            missed-dose triage, and community treatment supporter verification across Zomba Central
-            Hospital, Bwaila Hospital, and Machinga Health Centre.
+            missed-dose triage, and patient self-management across Zomba Central Hospital, Bwaila
+            Hospital, and Machinga Health Centre.
           </p>
         </div>
       </section>
@@ -122,7 +103,7 @@ export function PortalSelector() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2">
           {PORTALS.map((portal) => {
             const isCurrentRoleLoggedIn = isAuthenticated && user?.role === portal.role;
             const targetPath = isCurrentRoleLoggedIn ? portal.appPath : portal.loginPath;

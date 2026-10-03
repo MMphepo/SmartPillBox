@@ -1,15 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  ShieldCheck,
-  Stethoscope,
-  User,
-  Lock,
-  AlertCircle,
-  ArrowLeft,
-  KeyRound,
-  Building2,
-} from "lucide-react";
+import { Stethoscope, User, Lock, AlertCircle, ArrowLeft, KeyRound, Building2 } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { DEMO_CREDENTIALS_INFO } from "@/lib/auth/demo-auth";
 import type { UserRole } from "@/lib/auth/auth-types";
@@ -35,13 +26,6 @@ const ROLE_DETAILS = {
     icon: User,
     defaultRoute: "/patient/dashboard",
     demoUsername: "patient",
-  },
-  guardian: {
-    title: "Guardian Portal",
-    subtitle: "Treatment supporter access to monitor relative adherence & assisted doses",
-    icon: ShieldCheck,
-    defaultRoute: "/guardian/patient",
-    demoUsername: "guardian",
   },
 };
 

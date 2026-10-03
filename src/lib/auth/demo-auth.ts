@@ -23,16 +23,6 @@ export const DEMO_USERS: Record<string, { user: User; passwordHash: string }> = 
     },
     passwordHash: "demo123",
   },
-  guardian: {
-    user: {
-      id: "usr-grd-1",
-      username: "guardian",
-      name: "Mary Banda",
-      role: "guardian",
-      patientId: "pat-1", // Linked relative: Chifundo Banda
-    },
-    passwordHash: "demo123",
-  },
 };
 
 export const DEMO_CREDENTIALS_INFO = [
@@ -49,12 +39,5 @@ export const DEMO_CREDENTIALS_INFO = [
     username: "patient",
     password: "demo123",
     description: "View dose schedule, streak, 180-day regimen & request support",
-  },
-  {
-    role: "guardian" as UserRole,
-    title: "Guardian Portal",
-    username: "guardian",
-    password: "demo123",
-    description: "Monitor relative's adherence & log assisted doses",
   },
 ];
