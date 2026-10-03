@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Phone, ShieldCheck, Stethoscope, Building2 } from "lucide-react";
+import { CheckCircle2, Phone, ShieldCheck, Stethoscope, Building2, Radio } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { guardianForPatient, hsaForPatient, useTB } from "@/lib/tb-store";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -31,99 +32,122 @@ export function GuardianPatientView() {
           Supported Patient Profile
         </h1>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Patient record and clinical triad contacts for <strong>{patient.name}</strong>
+          Patient record and care triad details for <strong>{patient.name}</strong>
         </p>
       </header>
 
-      {/* Patient Card */}
-      <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+      {/* Main Patient Demographics & Action Card */}
+      <div className="rounded-xl border border-border bg-card p-6 shadow-sm space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
           <div>
-            <h2 className="font-display text-lg font-bold text-foreground">{patient.name}</h2>
-            <p className="text-xs text-muted-foreground">
-              {patient.sex}, {patient.age} yrs old · Facility: <strong>{patient.facility}</strong>
+            <div className="flex items-center gap-2">
+              <h2 className="font-display text-lg font-bold text-foreground">{patient.name}</h2>
+              <Badge
+                variant={patient.phase === "Intensive" ? "destructive" : "secondary"}
+                className="text-xs font-semibold"
+              >
+                {patient.phase} Phase
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {patient.sex}, {patient.age} years old · Catchment:{" "}
+              <strong>{patient.facility}</strong>
             </p>
           </div>
+
           <Button
             size="sm"
             onClick={() => {
               markAssistedDose(patient.id);
-              toast.success("Assisted dose confirmed for " + patient.name);
+              toast.success("Assisted dose confirmed", {
+                description: `Recorded as guardian-verified for ${patient.name}.`,
+              });
             }}
-            className="text-xs"
+            className="text-xs font-bold"
           >
-            <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Confirm Dose Taken
+            <CheckCircle2 className="mr-1.5 h-4 w-4" /> Confirm Dose Taken Today
           </Button>
         </div>
 
+        {/* Clinical Grid Indicators */}
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs">
-          <div className="rounded-lg bg-muted/40 p-3 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-semibold">
-              Smart Box Serial
+          <div className="rounded-lg bg-muted/40 p-3.5 border border-border">
+            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider flex items-center gap-1">
+              <Radio className="h-3 w-3 text-primary" /> Smart Box Serial
             </span>
-            <p className="font-mono text-sm font-bold mt-0.5 text-foreground">{patient.boxId}</p>
+            <p className="font-mono text-sm font-bold mt-1 text-foreground">{patient.boxId}</p>
           </div>
 
-          <div className="rounded-lg bg-muted/40 p-3 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-semibold">
-              Treatment Day
+          <div className="rounded-lg bg-muted/40 p-3.5 border border-border">
+            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
+              Treatment Progress
             </span>
-            <p className="font-semibold text-sm mt-0.5 text-foreground">
+            <p className="font-semibold text-sm mt-1 text-foreground">
               Day {patient.treatmentDay} of 180
             </p>
           </div>
 
-          <div className="rounded-lg bg-muted/40 p-3 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-semibold">
+          <div className="rounded-lg bg-muted/40 p-3.5 border border-border">
+            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
               30-Day Adherence
             </span>
-            <p className="font-semibold text-sm mt-0.5 text-foreground">{rate}%</p>
-            <Progress value={rate} className="h-1.5 mt-1.5" />
+            <p className="font-semibold text-sm mt-1 text-foreground">{rate}%</p>
+            <Progress value={rate} className="h-1.5 mt-2" />
           </div>
 
-          <div className="rounded-lg bg-muted/40 p-3 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-semibold">
-              Streak
+          <div className="rounded-lg bg-muted/40 p-3.5 border border-border">
+            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
+              Current Streak
             </span>
-            <p className="font-semibold text-sm mt-0.5 text-foreground">{currentStreak} Days</p>
+            <p className="font-semibold text-sm mt-1 text-foreground">
+              {currentStreak} Days Unbroken
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Triad Info */}
+      {/* Triad Information Cards */}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <ShieldCheck className="h-4 w-4 text-indigo-600" />
-            <h3 className="font-display text-sm font-bold text-foreground">Your Guardian Record</h3>
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <ShieldCheck className="h-5 w-5 text-indigo-600 shrink-0" />
+            <h3 className="font-display text-sm font-bold text-foreground">
+              Designated Guardian Record
+            </h3>
           </div>
-          <div className="text-xs space-y-1">
-            <p className="font-semibold text-foreground">{guardian.name}</p>
-            <p className="text-muted-foreground">Relation to patient: {guardian.relation}</p>
-            <p className="text-muted-foreground">Phone: {guardian.phone}</p>
+          <div className="text-xs space-y-2 bg-muted/30 p-3 rounded-lg border border-border">
+            <p className="font-bold text-foreground text-sm">{guardian.name}</p>
+            <p className="text-muted-foreground">
+              Relation: <strong>{guardian.relation}</strong>
+            </p>
+            <p className="text-muted-foreground flex items-center gap-1.5 pt-1">
+              <Phone className="h-3.5 w-3.5 text-primary" /> {guardian.phone}
+            </p>
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <Stethoscope className="h-4 w-4 text-primary" />
-            <h3 className="font-display text-sm font-bold text-foreground">
-              Assigned Health Worker
-            </h3>
-          </div>
-          <div className="text-xs space-y-2">
-            <div>
-              <p className="font-semibold text-foreground">{hsa.name}</p>
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Stethoscope className="h-5 w-5 text-primary shrink-0" />
+              <h3 className="font-display text-sm font-bold text-foreground">
+                Assigned Health Surveillance Assistant
+              </h3>
+            </div>
+            <div className="text-xs space-y-2 mt-3 bg-muted/30 p-3 rounded-lg border border-border">
+              <p className="font-bold text-foreground text-sm">{hsa.name}</p>
               <p className="text-muted-foreground">
                 {hsa.role} · {hsa.facility}
               </p>
             </div>
-            <a
-              href={`tel:${hsa.phone.replaceAll(" ", "")}`}
-              className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90"
-            >
-              <Phone className="h-3.5 w-3.5" /> Call HSA ({hsa.phone})
-            </a>
+          </div>
+
+          <div className="pt-3 border-t border-border">
+            <Button asChild size="sm" className="w-full text-xs font-bold justify-center">
+              <a href={`tel:${hsa.phone.replaceAll(" ", "")}`}>
+                <Phone className="mr-1.5 h-3.5 w-3.5" /> Call HSA ({hsa.phone})
+              </a>
+            </Button>
           </div>
         </div>
       </div>

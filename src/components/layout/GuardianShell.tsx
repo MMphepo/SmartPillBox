@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   Menu,
   X,
+  Building2,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -28,20 +29,20 @@ export function GuardianShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      {/* Top Ministry Accent Line */}
+      {/* Top Ministry Flag Line */}
       <div className="moh-flagline h-1.5 w-full shrink-0" />
 
       <div className="flex flex-1 flex-col md:flex-row">
-        {/* Sidebar Navigation */}
+        {/* Sidebar Navigation - Desktop */}
         <aside className="hidden w-64 shrink-0 border-r border-border bg-card md:flex md:flex-col justify-between">
           <div>
             <div className="border-b border-border p-4">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-indigo-600 text-white font-bold">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-indigo-600 text-white font-bold shadow-2xs">
                   <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <span className="block truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="block truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Ministry of Health
                   </span>
                   <span className="block truncate font-display text-sm font-bold text-foreground">
@@ -51,14 +52,17 @@ export function GuardianShell({ children }: { children: ReactNode }) {
               </div>
             </div>
 
-            <div className="border-b border-border bg-muted/30 px-4 py-3 text-xs">
-              <p className="font-semibold text-foreground truncate">{user?.name || "Mary Banda"}</p>
-              <p className="text-muted-foreground truncate">Treatment Supporter</p>
+            <div className="border-b border-border bg-muted/40 px-4 py-3 text-xs">
+              <p className="font-bold text-foreground truncate">{user?.name || "Mary Banda"}</p>
+              <p className="text-muted-foreground font-medium truncate flex items-center gap-1 mt-0.5">
+                <Building2 className="h-3 w-3 text-indigo-600 shrink-0" />
+                <span>Treatment Supporter</span>
+              </p>
             </div>
 
             <nav className="p-3 space-y-1">
-              <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Guardian Support
+              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Guardian Operations
               </div>
               {NAV_ITEMS.map((item) => {
                 const isActive =
@@ -70,9 +74,9 @@ export function GuardianShell({ children }: { children: ReactNode }) {
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-xs font-medium transition-colors",
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold transition-colors",
                       isActive
-                        ? "bg-indigo-600 text-white font-semibold"
+                        ? "bg-indigo-600 text-white shadow-2xs"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
@@ -89,7 +93,7 @@ export function GuardianShell({ children }: { children: ReactNode }) {
               variant="outline"
               size="sm"
               onClick={logout}
-              className="w-full justify-start text-xs text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
+              className="w-full justify-start text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
             >
               <LogOut className="mr-2 h-3.5 w-3.5" />
               Sign Out
@@ -99,13 +103,15 @@ export function GuardianShell({ children }: { children: ReactNode }) {
 
         {/* Mobile Header */}
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3 md:hidden">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-indigo-600 text-white">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-indigo-600 text-white font-bold">
               <ShieldCheck className="h-4 w-4" />
             </div>
             <div className="min-w-0">
               <span className="block truncate font-display text-sm font-bold">Guardian Portal</span>
-              <span className="block truncate text-[10px] text-muted-foreground">{user?.name}</span>
+              <span className="block truncate text-[10px] text-muted-foreground">
+                {user?.name || "Mary Banda"}
+              </span>
             </div>
           </div>
 
@@ -121,11 +127,12 @@ export function GuardianShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
+        {/* Mobile Dropdown Drawer */}
         {mobileMenuOpen && (
           <div className="border-b border-border bg-card p-4 md:hidden space-y-3 z-30">
             <div className="text-xs border-b border-border pb-2">
-              <p className="font-semibold text-foreground">{user?.name}</p>
-              <p className="text-muted-foreground">Guardian / Treatment Supporter</p>
+              <p className="font-bold text-foreground">{user?.name}</p>
+              <p className="text-muted-foreground">Treatment Supporter / Family Guardian</p>
             </div>
             <nav className="space-y-1">
               {NAV_ITEMS.map((item) => {
@@ -139,9 +146,9 @@ export function GuardianShell({ children }: { children: ReactNode }) {
                     to={item.to}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-xs font-medium",
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold",
                       isActive
-                        ? "bg-indigo-600 text-white font-semibold"
+                        ? "bg-indigo-600 text-white"
                         : "text-muted-foreground hover:bg-muted",
                     )}
                   >
@@ -159,7 +166,7 @@ export function GuardianShell({ children }: { children: ReactNode }) {
                   setMobileMenuOpen(false);
                   logout();
                 }}
-                className="w-full justify-center text-xs text-destructive border-destructive/20"
+                className="w-full justify-center text-xs font-medium text-destructive border-destructive/20"
               >
                 <LogOut className="mr-2 h-3.5 w-3.5" />
                 Sign Out

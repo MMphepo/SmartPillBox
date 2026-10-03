@@ -9,6 +9,7 @@ import {
   Menu,
   X,
   Globe2,
+  Building2,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -42,16 +43,16 @@ export function PatientShell({ children }: { children: ReactNode }) {
       <div className="moh-flagline h-1.5 w-full shrink-0" />
 
       <div className="flex flex-1 flex-col md:flex-row">
-        {/* Sidebar Navigation */}
+        {/* Sidebar Navigation - Desktop */}
         <aside className="hidden w-64 shrink-0 border-r border-border bg-card md:flex md:flex-col justify-between">
           <div>
             <div className="border-b border-border p-4">
               <div className="flex items-center gap-3">
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-emerald-600 text-white font-bold">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-600 text-white font-bold shadow-2xs">
                   <User className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <span className="block truncate text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  <span className="block truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Ministry of Health
                   </span>
                   <span className="block truncate font-display text-sm font-bold text-foreground">
@@ -61,18 +62,17 @@ export function PatientShell({ children }: { children: ReactNode }) {
               </div>
             </div>
 
-            <div className="border-b border-border bg-muted/30 px-4 py-3 text-xs">
-              <p className="font-semibold text-foreground truncate">
-                {user?.name || "Chifundo Banda"}
-              </p>
-              <p className="text-muted-foreground truncate">
-                {user?.facility || "Zomba Central Hospital"}
+            <div className="border-b border-border bg-muted/40 px-4 py-3 text-xs">
+              <p className="font-bold text-foreground truncate">{user?.name || "Chifundo Banda"}</p>
+              <p className="text-muted-foreground truncate flex items-center gap-1 mt-0.5">
+                <Building2 className="h-3 w-3 text-emerald-600 shrink-0" />
+                <span>{user?.facility || "Zomba Central Hospital"}</span>
               </p>
             </div>
 
             <nav className="p-3 space-y-1">
-              <div className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                My Care
+              <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                My Treatment Care
               </div>
               {NAV_ITEMS.map((item) => {
                 const isActive =
@@ -84,9 +84,9 @@ export function PatientShell({ children }: { children: ReactNode }) {
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-xs font-medium transition-colors",
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold transition-colors",
                       isActive
-                        ? "bg-emerald-600 text-white font-semibold"
+                        ? "bg-emerald-600 text-white shadow-2xs"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
@@ -100,16 +100,20 @@ export function PatientShell({ children }: { children: ReactNode }) {
 
           <div className="border-t border-border p-3 space-y-3 bg-card">
             <div className="space-y-1 px-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
                 <Globe2 className="h-3 w-3" /> Language / Chilankhulo
               </label>
               <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                <SelectTrigger className="h-8 text-xs">
+                <SelectTrigger className="h-8 text-xs font-medium">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="ny">Chichewa</SelectItem>
+                  <SelectItem value="en" className="text-xs">
+                    English
+                  </SelectItem>
+                  <SelectItem value="ny" className="text-xs">
+                    Chichewa
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -118,7 +122,7 @@ export function PatientShell({ children }: { children: ReactNode }) {
               variant="outline"
               size="sm"
               onClick={logout}
-              className="w-full justify-start text-xs text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
+              className="w-full justify-start text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
             >
               <LogOut className="mr-2 h-3.5 w-3.5" />
               Sign Out
@@ -128,13 +132,15 @@ export function PatientShell({ children }: { children: ReactNode }) {
 
         {/* Mobile Header */}
         <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3 md:hidden">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-emerald-600 text-white">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-600 text-white font-bold">
               <User className="h-4 w-4" />
             </div>
             <div className="min-w-0">
               <span className="block truncate font-display text-sm font-bold">Patient Portal</span>
-              <span className="block truncate text-[10px] text-muted-foreground">{user?.name}</span>
+              <span className="block truncate text-[10px] text-muted-foreground">
+                {user?.name || "Chifundo Banda"}
+              </span>
             </div>
           </div>
 
@@ -150,10 +156,11 @@ export function PatientShell({ children }: { children: ReactNode }) {
           </div>
         </header>
 
+        {/* Mobile Dropdown Drawer */}
         {mobileMenuOpen && (
           <div className="border-b border-border bg-card p-4 md:hidden space-y-3 z-30">
             <div className="text-xs border-b border-border pb-2">
-              <p className="font-semibold text-foreground">{user?.name}</p>
+              <p className="font-bold text-foreground">{user?.name}</p>
               <p className="text-muted-foreground">{user?.facility}</p>
             </div>
             <nav className="space-y-1">
@@ -168,9 +175,9 @@ export function PatientShell({ children }: { children: ReactNode }) {
                     to={item.to}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 rounded-md px-3 py-2 text-xs font-medium",
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-xs font-semibold",
                       isActive
-                        ? "bg-emerald-600 text-white font-semibold"
+                        ? "bg-emerald-600 text-white"
                         : "text-muted-foreground hover:bg-muted",
                     )}
                   >
@@ -182,16 +189,20 @@ export function PatientShell({ children }: { children: ReactNode }) {
             </nav>
             <div className="pt-2 border-t border-border flex flex-col gap-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold uppercase text-muted-foreground">
+                <label className="text-[10px] font-bold uppercase text-muted-foreground">
                   Language / Chilankhulo
                 </label>
                 <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-8 text-xs font-medium">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="ny">Chichewa</SelectItem>
+                    <SelectItem value="en" className="text-xs">
+                      English
+                    </SelectItem>
+                    <SelectItem value="ny" className="text-xs">
+                      Chichewa
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
