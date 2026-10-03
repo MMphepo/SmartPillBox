@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { User, Phone, ShieldCheck, Stethoscope, Building2 } from "lucide-react";
+import { User, Phone, ShieldCheck, Stethoscope, Building2, Radio } from "lucide-react";
 import { guardians, healthWorkers } from "@/lib/tb-data";
 import { useTB } from "@/lib/tb-store";
 import { useAuth } from "@/lib/auth/auth-context";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/patient/profile")({
   head: () => ({
@@ -27,92 +28,115 @@ export function PatientProfile() {
           Patient Profile & Care Contacts
         </h1>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Your personal record, assigned health worker, and designated family guardian
+          Your personal record, assigned health surveillance assistant, and designated guardian
         </p>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Personal Demographics */}
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <User className="h-5 w-5 text-emerald-600" />
-            <h2 className="font-display text-base font-bold text-foreground">Personal Profile</h2>
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <User className="h-5 w-5 text-emerald-600 shrink-0" />
+            <h2 className="font-display text-base font-bold text-foreground">Personal Record</h2>
           </div>
 
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between py-1 border-b border-border">
-              <span className="text-muted-foreground">Full Name:</span>
-              <strong className="text-foreground">{patient.name}</strong>
+          <div className="space-y-3 text-xs">
+            <div className="flex justify-between items-center py-1 border-b border-border">
+              <span className="text-muted-foreground font-medium">Full Name:</span>
+              <strong className="text-foreground font-bold">{patient.name}</strong>
             </div>
-            <div className="flex justify-between py-1 border-b border-border">
-              <span className="text-muted-foreground">Age & Sex:</span>
-              <strong className="text-foreground">
+            <div className="flex justify-between items-center py-1 border-b border-border">
+              <span className="text-muted-foreground font-medium">Age & Sex:</span>
+              <strong className="text-foreground font-semibold">
                 {patient.age} years old ({patient.sex})
               </strong>
             </div>
-            <div className="flex justify-between py-1 border-b border-border">
-              <span className="text-muted-foreground">Facility Catchment:</span>
-              <strong className="text-foreground flex items-center gap-1">
-                <Building2 className="h-3.5 w-3.5 text-primary" /> {patient.facility}
-              </strong>
+            <div className="flex justify-between items-center py-1 border-b border-border">
+              <span className="text-muted-foreground font-medium flex items-center gap-1">
+                <Building2 className="h-3.5 w-3.5 text-primary" /> Facility Catchment:
+              </span>
+              <strong className="text-foreground font-semibold">{patient.facility}</strong>
             </div>
-            <div className="flex justify-between py-1 border-b border-border">
-              <span className="text-muted-foreground">Phone Number:</span>
-              <strong className="text-foreground">{patient.phone}</strong>
+            <div className="flex justify-between items-center py-1 border-b border-border">
+              <span className="text-muted-foreground font-medium flex items-center gap-1">
+                <Phone className="h-3.5 w-3.5 text-primary" /> Phone Number:
+              </span>
+              <strong className="text-foreground font-semibold">{patient.phone}</strong>
             </div>
-            <div className="flex justify-between py-1">
-              <span className="text-muted-foreground">Smart Box Serial:</span>
-              <strong className="font-mono text-foreground">{patient.boxId}</strong>
+            <div className="flex justify-between items-center py-1">
+              <span className="text-muted-foreground font-medium flex items-center gap-1">
+                <Radio className="h-3.5 w-3.5 text-primary" /> Smart Box Serial:
+              </span>
+              <strong className="font-mono text-foreground font-bold">{patient.boxId}</strong>
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <Stethoscope className="h-5 w-5 text-primary" />
-            <h2 className="font-display text-base font-bold text-foreground">
-              Assigned Health Worker
-            </h2>
+        {/* Assigned Health Surveillance Assistant */}
+        <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center gap-2 border-b border-border pb-3">
+              <Stethoscope className="h-5 w-5 text-primary shrink-0" />
+              <h2 className="font-display text-base font-bold text-foreground">
+                Assigned Health Worker
+              </h2>
+            </div>
+
+            {hsa ? (
+              <div className="mt-4 space-y-3 text-xs">
+                <div className="space-y-1 bg-muted/30 p-3 rounded-lg border border-border">
+                  <p className="font-bold text-foreground text-sm">{hsa.name}</p>
+                  <p className="text-muted-foreground font-medium">
+                    {hsa.role} · {hsa.facility}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-4 text-xs text-muted-foreground">No HSA currently assigned.</p>
+            )}
           </div>
 
-          {hsa ? (
-            <div className="space-y-3 text-xs">
-              <div className="space-y-1">
-                <p className="font-bold text-foreground text-sm">{hsa.name}</p>
-                <p className="text-muted-foreground">
-                  {hsa.role} · {hsa.facility}
-                </p>
-              </div>
-
-              <div className="pt-2">
-                <a
-                  href={`tel:${hsa.phone.replaceAll(" ", "")}`}
-                  className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-                >
-                  <Phone className="h-3.5 w-3.5" /> Call HSA ({hsa.phone})
+          {hsa && (
+            <div className="pt-3 border-t border-border">
+              <Button asChild size="sm" className="w-full text-xs font-bold justify-center">
+                <a href={`tel:${hsa.phone.replaceAll(" ", "")}`}>
+                  <Phone className="mr-2 h-3.5 w-3.5" /> Call HSA ({hsa.phone})
                 </a>
-              </div>
+              </Button>
             </div>
-          ) : (
-            <p className="text-xs text-muted-foreground">No HSA currently assigned.</p>
           )}
         </div>
       </div>
 
+      {/* Designated Family Guardian */}
       {g && (
         <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 border-b border-border pb-2">
-            <ShieldCheck className="h-5 w-5 text-indigo-600" />
+          <div className="flex items-center gap-2 border-b border-border pb-3">
+            <ShieldCheck className="h-5 w-5 text-indigo-600 shrink-0" />
             <h2 className="font-display text-base font-bold text-foreground">
-              Designated Family Guardian
+              Designated Family Guardian / Supporter
             </h2>
           </div>
 
-          <div className="space-y-1 text-xs">
-            <p className="font-semibold text-foreground text-sm">{g.name}</p>
-            <p className="text-muted-foreground">Relation: {g.relation}</p>
-            <p className="text-muted-foreground flex items-center gap-1.5 mt-1">
-              <Phone className="h-3.5 w-3.5" /> {g.phone}
-            </p>
+          <div className="grid gap-3 sm:grid-cols-3 text-xs bg-muted/30 p-3 rounded-lg border border-border">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Guardian Name
+              </span>
+              <p className="font-bold text-sm text-foreground mt-0.5">{g.name}</p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Relationship to Patient
+              </span>
+              <p className="font-semibold text-xs text-foreground mt-0.5">{g.relation}</p>
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                Contact Phone
+              </span>
+              <p className="font-semibold text-xs text-foreground mt-0.5">{g.phone}</p>
+            </div>
           </div>
         </div>
       )}

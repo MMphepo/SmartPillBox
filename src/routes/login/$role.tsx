@@ -20,8 +20,6 @@ function LoginPage() {
     role = "health_worker";
   } else if (rawRole === "patient") {
     role = "patient";
-  } else if (rawRole === "guardian") {
-    role = "guardian";
   }
 
   if (!role) {
