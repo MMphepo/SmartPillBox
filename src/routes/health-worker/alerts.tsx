@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, CheckCircle2, ClipboardPlus } from "lucide-react";
+import { CheckCircle, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
@@ -51,7 +51,7 @@ function HealthWorkerAlerts() {
     });
     setNotes("");
     setModalPatient(null);
-    toast.success("Action logged", { description: `${type} · ${patient.name}` });
+    toast.success("Intervention recorded", { description: `${type} · ${patient.name}` });
   };
 
   return (
@@ -62,111 +62,104 @@ function HealthWorkerAlerts() {
             Triage Queue
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Active alerts requiring clinical action or patient contact
+            Clinical alert management and patient contact queue
           </p>
         </div>
         <Badge
-          variant={unresolved.length > 0 ? "destructive" : "secondary"}
-          className="text-xs font-semibold px-2.5 py-0.5"
+          variant={unresolved.length > 0 ? "destructive" : "outline"}
+          className="text-xs font-semibold px-2.5 py-0.5 border-border"
         >
           {unresolved.length} Unresolved
         </Badge>
       </header>
 
-      {/* Unresolved Alerts */}
+      {/* Unresolved Active Alerts */}
       <section className="space-y-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           Active Alerts ({unresolved.length})
         </h2>
+
         {unresolved.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card p-10 text-center shadow-sm">
-            <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400">
-              <CheckCircle2 className="h-6 w-6" />
-            </div>
-            <h3 className="mt-3 text-sm font-semibold text-foreground">Queue Empty</h3>
-            <p className="mt-1 text-xs text-muted-foreground max-w-sm mx-auto">
-              All triage alerts have been reviewed and resolved.
-            </p>
+          <div className="border border-border bg-card p-8 rounded-md text-center text-xs text-muted-foreground flex flex-col items-center justify-center gap-2">
+            <CheckCircle className="h-6 w-6 text-emerald-600" />
+            <span className="font-medium text-foreground">Triage Queue Empty</span>
+            <span>All adherence alerts have been reviewed and resolved.</span>
           </div>
         ) : (
-          unresolved.map((a) => {
-            const p = patients.find((x) => x.id === a.patientId)!;
-            return (
-              <div
-                key={a.id}
-                className="rounded-xl border border-border bg-card p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-              >
-                <div className="space-y-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <AlertTriangle
-                      className={`h-4 w-4 shrink-0 ${a.severity === "high" ? "text-destructive" : "text-amber-500"}`}
-                    />
-                    <Link
-                      to="/health-worker/patients/$id"
-                      params={{ id: p.id }}
-                      className="font-semibold text-sm text-foreground hover:underline"
-                    >
-                      {p.name}
-                    </Link>
-                    <Badge
-                      variant={a.severity === "high" ? "destructive" : "outline"}
-                      className="text-[10px] uppercase font-semibold"
-                    >
-                      {a.kind.replaceAll("_", " ")}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{a.message}</p>
-                  <p className="text-[11px] text-muted-foreground">
-                    Facility: {p.facility} · Box ID:{" "}
-                    <span className="font-mono text-foreground">{p.boxId}</span>
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0 border-t border-border pt-3 sm:border-0 sm:pt-0">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setModalPatient(p.id)}
-                    className="text-xs h-8"
-                  >
-                    <ClipboardPlus className="mr-1.5 h-3.5 w-3.5" /> Log Action
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      resolveAlert(a.id);
-                      toast.success("Alert resolved");
-                    }}
-                    className="text-xs font-semibold h-8"
-                  >
-                    Resolve
-                  </Button>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </section>
-
-      {/* Resolved History */}
-      {resolved.length > 0 && (
-        <section className="space-y-3 pt-4 border-t border-border">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            Resolved ({resolved.length})
-          </h2>
-          <div className="space-y-2 opacity-80">
-            {resolved.map((a) => {
+          <div className="border border-border bg-card rounded-md divide-y divide-border">
+            {unresolved.map((a) => {
               const p = patients.find((x) => x.id === a.patientId)!;
               return (
                 <div
                   key={a.id}
-                  className="rounded-lg border border-border bg-muted/30 p-3 text-xs flex items-center justify-between gap-3"
+                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs"
                 >
+                  <div className="space-y-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <Link
+                        to="/health-worker/patients/$id"
+                        params={{ id: p.id }}
+                        className="font-bold text-foreground text-sm hover:underline"
+                      >
+                        {p.name}
+                      </Link>
+                      <Badge
+                        variant={a.severity === "high" ? "destructive" : "secondary"}
+                        className="text-[10px] uppercase font-semibold"
+                      >
+                        {a.kind.replaceAll("_", " ")}
+                      </Badge>
+                      <span className="text-muted-foreground">Facility: {p.facility}</span>
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed">{a.message}</p>
+                    <p className="text-[11px] text-muted-foreground font-mono">
+                      Box Serial: {p.boxId}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0 border-t border-border/40 pt-3 sm:border-0 sm:pt-0">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setModalPatient(p.id)}
+                      className="text-xs h-8 border-border font-medium"
+                    >
+                      <Plus className="mr-1 h-3.5 w-3.5" /> Log Action
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        resolveAlert(a.id);
+                        toast.success("Alert resolved");
+                      }}
+                      className="text-xs font-semibold h-8"
+                    >
+                      Resolve
+                    </Button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Resolved Alert History Table */}
+      {resolved.length > 0 && (
+        <section className="space-y-3 pt-4 border-t border-border">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            Resolved Alerts ({resolved.length})
+          </h2>
+          <div className="border border-border bg-card rounded-md divide-y divide-border text-xs">
+            {resolved.map((a) => {
+              const p = patients.find((x) => x.id === a.patientId)!;
+              return (
+                <div key={a.id} className="p-3 flex items-center justify-between gap-4">
                   <div className="min-w-0">
-                    <span className="font-semibold text-foreground">{p?.name}</span>:{" "}
+                    <span className="font-bold text-foreground">{p?.name}</span>:{" "}
                     <span className="text-muted-foreground">{a.message}</span>
                   </div>
-                  <Badge variant="secondary" className="text-[10px] shrink-0">
+                  <Badge variant="secondary" className="text-[10px] shrink-0 font-medium">
                     Resolved
                   </Badge>
                 </div>
@@ -181,7 +174,9 @@ function HealthWorkerAlerts() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Log Action</DialogTitle>
-            <DialogDescription>Record follow-up action for this alert.</DialogDescription>
+            <DialogDescription className="text-xs">
+              Record follow-up action for this alert.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2 text-xs">
             <div className="space-y-1.5">

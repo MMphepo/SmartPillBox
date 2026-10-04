@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CalendarDays } from "lucide-react";
 import { AdherenceCalendar, AdherenceLegend } from "@/components/tb/AdherenceCalendar";
 import { useTB } from "@/lib/tb-store";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -20,16 +19,16 @@ export function PatientAdherence() {
 
   return (
     <div className="space-y-6">
-      <header className="border-b border-border pb-4 flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-foreground flex items-center gap-2">
-            <CalendarDays className="h-6 w-6 text-emerald-600 shrink-0" />
-            30-Day Adherence
-          </h1>
-        </div>
+      <header className="border-b border-border pb-4">
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+          30-Day Medication Calendar
+        </h1>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Record of daily medication doses recorded over the past 30 days
+        </p>
       </header>
 
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-2xs space-y-5">
+      <div className="border border-border bg-card p-5 rounded-md space-y-5">
         <AdherenceCalendar doses={doses.slice(-30)} />
         <AdherenceLegend />
       </div>

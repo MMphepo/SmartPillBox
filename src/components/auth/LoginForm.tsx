@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import { Stethoscope, User, Lock, AlertCircle, ArrowLeft, KeyRound, Building2 } from "lucide-react";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
-import { DEMO_CREDENTIALS_INFO } from "@/lib/auth/demo-auth";
 import type { UserRole } from "@/lib/auth/auth-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,16 +13,14 @@ interface LoginFormProps {
 
 const ROLE_DETAILS = {
   health_worker: {
-    title: "Health Worker Portal",
-    icon: Stethoscope,
+    title: "Health Worker Sign In",
+    subtitle: "Clinicians and Health Surveillance Assistants",
     defaultRoute: "/health-worker/dashboard",
-    demoUsername: "healthworker",
   },
   patient: {
-    title: "Patient Portal",
-    icon: User,
+    title: "Patient Sign In",
+    subtitle: "Patients Enrolled in TB Treatment",
     defaultRoute: "/patient/dashboard",
-    demoUsername: "patient",
   },
 };
 
@@ -32,12 +29,10 @@ export function LoginForm({ role }: LoginFormProps) {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState(details.demoUsername);
-  const [password, setPassword] = useState("demo123");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const demoInfo = DEMO_CREDENTIALS_INFO.find((c) => c.role === role);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,97 +44,54 @@ export function LoginForm({ role }: LoginFormProps) {
       if (res.success) {
         navigate({ to: details.defaultRoute, replace: true });
       } else {
-        setError(res.error || "Invalid username or password.");
+        setError(res.error || "Invalid credentials. Please verify your username and password.");
       }
     } catch {
-      setError("An unexpected error occurred. Please try again.");
+      setError("An unexpected authentication error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const autofillDemo = () => {
-    if (demoInfo) {
-      setUsername(demoInfo.username);
-      setPassword(demoInfo.password);
-    }
-  };
-
-  const Icon = details.icon;
-
   return (
-    <div className="mx-auto max-w-md space-y-6 py-6 sm:py-12">
+    <div className="mx-auto max-w-sm space-y-6 py-6 sm:py-12">
       <Link
         to="/"
         className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" />
-        Back
+        <ArrowLeft className="h-3.5 w-3.5" />
+        Return to portal selection
       </Link>
 
-      <div className="rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-2xs">
-        <div className="text-center">
-          <div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-primary/10 text-primary">
-            <Icon className="h-6 w-6" />
-          </div>
-          <p className="mt-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center justify-center gap-1.5">
-            <Building2 className="h-3 w-3" />
-            Ministry of Health · Malawi
+      <div className="border border-border bg-card p-6 sm:p-8 rounded-md space-y-6">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Ministry of Health
           </p>
-          <h1 className="mt-1 font-display text-xl sm:text-2xl font-bold text-foreground">
-            {details.title}
-          </h1>
+          <h1 className="font-display text-lg font-bold text-foreground mt-0.5">{details.title}</h1>
+          <p className="text-xs text-muted-foreground mt-1">{details.subtitle}</p>
         </div>
 
-        {/* Demo Credentials Container */}
-        {demoInfo && (
-          <div className="mt-5 rounded-xl border border-primary/20 bg-primary/5 p-3.5 text-xs">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 font-bold text-primary">
-                <KeyRound className="h-3.5 w-3.5" />
-                <span>Demo Account</span>
-              </div>
-              <button
-                type="button"
-                onClick={autofillDemo}
-                className="text-[11px] font-semibold text-primary underline hover:text-primary/80"
-              >
-                Auto-fill
-              </button>
-            </div>
-            <div className="mt-2 grid grid-cols-2 gap-2 font-mono text-xs text-foreground bg-background/80 p-2 rounded-lg border border-border">
-              <div>
-                <span className="text-muted-foreground font-sans text-[11px]">User:</span>{" "}
-                <strong className="select-all font-semibold">{demoInfo.username}</strong>
-              </div>
-              <div>
-                <span className="text-muted-foreground font-sans text-[11px]">Pass:</span>{" "}
-                <strong className="select-all font-semibold">{demoInfo.password}</strong>
-              </div>
-            </div>
-          </div>
-        )}
-
         {error && (
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
-            <AlertCircle className="h-4 w-4 shrink-0" />
-            <span className="font-medium">{error}</span>
+          <div className="flex items-start gap-2.5 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span className="font-medium leading-relaxed">{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label htmlFor="username" className="text-xs font-semibold">
-              Username
+              Username / Email
             </Label>
             <Input
               id="username"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="Username"
+              placeholder="Enter username"
               required
-              className="text-xs sm:text-sm h-10"
+              className="text-xs h-9"
             />
           </div>
 
@@ -152,25 +104,18 @@ export function LoginForm({ role }: LoginFormProps) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Password"
+              placeholder="Enter password"
               required
-              className="text-xs sm:text-sm h-10"
+              className="text-xs h-9"
             />
           </div>
 
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="w-full text-xs font-bold h-10 mt-2"
+            className="w-full text-xs font-semibold h-9 mt-2"
           >
-            {isSubmitting ? (
-              "Signing in..."
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                <Lock className="h-4 w-4" />
-                Sign In
-              </span>
-            )}
+            {isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
         </form>
       </div>

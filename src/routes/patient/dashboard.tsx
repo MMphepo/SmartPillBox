@@ -1,16 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AlertOctagon, CheckCircle2, Clock, EyeOff, Flame, LifeBuoy, Pill } from "lucide-react";
+import { CheckCircle2, Clock, EyeOff, LifeBuoy, AlertOctagon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { AdherenceCalendar, AdherenceLegend } from "@/components/tb/AdherenceCalendar";
-import { StatCard } from "@/components/tb/StatCard";
+import { AdherenceCalendar } from "@/components/tb/AdherenceCalendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Switch } from "@/components/ui/switch";
-import { PHASE_BOUNDARY_DAY, REGIMEN_DAYS } from "@/lib/tb-data";
+import { REGIMEN_DAYS } from "@/lib/tb-data";
 import { hsaForPatient, useTB, type Language } from "@/lib/tb-store";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -23,32 +22,30 @@ export const Route = createFileRoute("/patient/dashboard")({
 
 const copy: Record<Language, Record<string, string>> = {
   en: {
-    greeting: "Dashboard",
-    next: "Next Dose In",
-    streak: "Streak",
-    progress: "Regimen Progress",
+    greeting: "Daily Care",
+    next: "Next Dose Due",
+    streak: "Consecutive Days",
+    progress: "Treatment Progress",
     support: "Request Support",
-    issue: "Report Problem",
-    calendar: "30-Day History",
+    issue: "Report Box Problem",
+    history: "Recent Medication History",
     discreet: "Discreet Privacy Mode",
-    taken: "Dose Taken Today",
-    pending: "Dose Due Today",
-    phaseI: "Intensive Phase",
-    phaseC: "Continuation Phase",
+    taken: "Dose Recorded Today",
+    pending: "Dose Scheduled Today",
+    markTaken: "Mark as Taken",
   },
   ny: {
     greeting: "Mankhwala",
     next: "Mlingo Wotsatira",
-    streak: "Motsatizana",
+    streak: "Masiku Motsatizana",
     progress: "Chithandizo",
     support: "Pemphani Thandizo",
     issue: "Nenani Vuto",
-    calendar: "Masiku 30",
+    history: "Mbiri Ya Mankhwala",
     discreet: "Njira Yobisika",
     taken: "Mlingo Walembedwa",
     pending: "Mlingo Wosatengedwa",
-    phaseI: "Gawo Lolimba",
-    phaseC: "Gawo Lopitiriza",
+    markTaken: "Lembani Kuti Mwamwa",
   },
 };
 
@@ -79,13 +76,13 @@ function PatientDashboard() {
   const {
     patientById,
     patientDoses,
-    adherenceRate,
     streak,
     today,
     language,
     discreetMode,
     setDiscreetMode,
     raisePatientRequest,
+    recordPatientDose,
   } = useTB();
 
   const assignedPatientId = user?.patientId || "pat-1";
@@ -95,114 +92,133 @@ function PatientDashboard() {
   const doses = patientDoses(patient.id);
   const todayDose = doses.find((d) => d.date === today);
   const hsa = hsaForPatient(patient.id);
-  const progress = Math.round((patient.treatmentDay / REGIMEN_DAYS) * 100);
+  const progressPercent = Math.round((patient.treatmentDay / REGIMEN_DAYS) * 100);
+  const currentWeek = Math.ceil(patient.treatmentDay / 7);
+
+  const isTakenToday = todayDose && todayDose.status !== "missed";
+
+  const handleMarkTaken = () => {
+    recordPatientDose(patient.id, today, patient.doseTime);
+    toast.success("Dose recorded", { description: "Your daily dose has been marked as taken." });
+  };
 
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <header className="border-b border-border pb-4 flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
-          <h1 className="font-display text-2xl font-bold text-foreground">
-            {discreetMode ? "Daily Care" : `${t.greeting} — ${patient.name}`}
+          <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+            {discreetMode ? "Daily Care Schedule" : `${t.greeting} · ${patient.name}`}
           </h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            TB Treatment Regimen · Day {patient.treatmentDay} of {REGIMEN_DAYS}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <Label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 cursor-pointer">
             <EyeOff className="h-3.5 w-3.5" />
             {t.discreet}
           </Label>
           <Switch checked={discreetMode} onCheckedChange={setDiscreetMode} />
         </div>
-      </header>
+      </div>
 
-      {/* Primary Hero Status Card */}
-      <section className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-2xs lg:col-span-2 flex flex-col justify-between space-y-6">
-          <div className="flex flex-wrap items-center gap-2">
+      {/* 1. TODAY'S MEDICATION & NEXT DOSE */}
+      <section className="border border-border bg-card p-5 sm:p-6 rounded-md space-y-6">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-display text-base font-bold text-foreground">
+              Today's Dose Schedule
+            </h2>
             <Badge
-              variant={todayDose && todayDose.status !== "missed" ? "secondary" : "destructive"}
-              className="text-xs font-bold px-3 py-1"
+              variant={isTakenToday ? "outline" : "destructive"}
+              className="text-xs font-semibold border-border"
             >
-              {todayDose && todayDose.status !== "missed" ? t.taken : t.pending}
-            </Badge>
-            <Badge variant="outline" className="text-xs font-semibold px-3 py-1">
-              {patient.treatmentDay <= PHASE_BOUNDARY_DAY ? t.phaseI : t.phaseC}
+              {isTakenToday ? t.taken : t.pending}
             </Badge>
           </div>
+          <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" /> Scheduled Time: {patient.doseTime}
+          </span>
+        </div>
 
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
           <div>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               {t.next}
             </p>
-            <p className="font-display text-5xl font-extrabold tabular-nums text-primary mt-1 tracking-tight">
+            <p className="font-display text-4xl sm:text-5xl font-extrabold tabular-nums text-foreground mt-1 tracking-tight">
               {countdown}
             </p>
           </div>
 
-          <div className="pt-3 flex flex-wrap gap-2.5 border-t border-border">
-            <Button
-              size="sm"
-              onClick={() => {
-                raisePatientRequest(patient.id, "SUPPORT_REQUEST");
-                toast.success("Request sent", { description: `${hsa.name} notified.` });
-              }}
-              className="text-xs font-bold"
-            >
-              <LifeBuoy className="mr-1.5 h-3.5 w-3.5" />
-              {t.support}
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => {
-                raisePatientRequest(patient.id, "BOX_ISSUE");
-                toast.success("Problem reported", { description: `${patient.boxId} flagged.` });
-              }}
-              className="text-xs font-semibold"
-            >
-              <AlertOctagon className="mr-1.5 h-3.5 w-3.5" />
-              {t.issue}
-            </Button>
+          <div className="shrink-0 space-y-2">
+            {!isTakenToday ? (
+              <Button
+                onClick={handleMarkTaken}
+                className="w-full sm:w-auto text-xs font-bold px-6 h-10"
+              >
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                {t.markTaken}
+              </Button>
+            ) : (
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-400 px-4 py-2.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" /> Dose recorded for today
+              </div>
+            )}
           </div>
         </div>
 
-        {/* KPI Metrics Stack */}
-        <div className="grid gap-4">
-          <StatCard
-            label={t.streak}
-            value={`${streak(patient.id)} Days`}
-            icon={Flame}
-            tone="success"
-          />
-          <StatCard
-            label="Adherence"
-            value={`${adherenceRate(patient.id)}%`}
-            icon={CheckCircle2}
-            tone={adherenceRate(patient.id) >= 85 ? "success" : "warning"}
-          />
-          <StatCard label="Schedule Window" value={patient.doseTime} icon={Clock} />
+        <div className="pt-3 border-t border-border flex flex-wrap gap-2 text-xs">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              raisePatientRequest(patient.id, "SUPPORT_REQUEST");
+              toast.success("Support requested", { description: `${hsa.name} notified.` });
+            }}
+            className="text-xs font-medium border-border"
+          >
+            <LifeBuoy className="mr-1.5 h-3.5 w-3.5" />
+            {t.support}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              raisePatientRequest(patient.id, "BOX_ISSUE");
+              toast.success("Problem reported", {
+                description: "Health surveillance assistant alerted.",
+              });
+            }}
+            className="text-xs font-medium border-border"
+          >
+            <AlertOctagon className="mr-1.5 h-3.5 w-3.5" />
+            {t.issue}
+          </Button>
         </div>
       </section>
 
-      {/* Regimen Timeline */}
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-base font-bold text-foreground">{t.progress}</h2>
-          <span className="text-xs font-bold text-muted-foreground">
-            Day {patient.treatmentDay} of {REGIMEN_DAYS} ({progress}%)
+      {/* 2. TREATMENT PROGRESS */}
+      <section className="border border-border bg-card p-5 rounded-md space-y-3">
+        <div className="flex items-center justify-between text-xs font-semibold">
+          <h2 className="font-display text-sm font-bold text-foreground">{t.progress}</h2>
+          <span className="text-muted-foreground">
+            Week {currentWeek} of 24 ({progressPercent}%)
           </span>
         </div>
-        <Progress value={progress} className="h-2.5" />
+        <Progress value={progressPercent} className="h-2" />
+        <div className="flex justify-between text-[11px] text-muted-foreground pt-1">
+          <span>Day 1</span>
+          <span>Consecutive Streak: {streak(patient.id)} Days</span>
+          <span>Day {REGIMEN_DAYS}</span>
+        </div>
       </section>
 
-      {/* 30-Day Adherence Calendar */}
-      <section className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-base font-bold text-foreground">{t.calendar}</h2>
-          <Pill className="h-4 w-4 text-emerald-600" />
-        </div>
+      {/* 3. RECENT MEDICATION HISTORY */}
+      <section className="border border-border bg-card p-5 rounded-md space-y-4">
+        <h2 className="font-display text-sm font-bold text-foreground">{t.history}</h2>
         <AdherenceCalendar doses={doses.slice(-30)} />
-        <AdherenceLegend />
       </section>
     </div>
   );

@@ -3,14 +3,14 @@ import { cn } from "@/lib/utils";
 
 const statusStyles: Record<string, { bg: string; text: string; border: string }> = {
   smartbox: {
-    bg: "bg-emerald-600 dark:bg-emerald-700",
+    bg: "bg-emerald-700 dark:bg-emerald-800",
     text: "text-white",
-    border: "border-emerald-700 dark:border-emerald-600",
+    border: "border-emerald-800 dark:border-emerald-700",
   },
   guardian: {
-    bg: "bg-emerald-600 dark:bg-emerald-700",
+    bg: "bg-emerald-700 dark:bg-emerald-800",
     text: "text-white",
-    border: "border-emerald-700 dark:border-emerald-600",
+    border: "border-emerald-800 dark:border-emerald-700",
   },
   hsa: {
     bg: "bg-amber-600 dark:bg-amber-700",
@@ -18,17 +18,17 @@ const statusStyles: Record<string, { bg: string; text: string; border: string }>
     border: "border-amber-700 dark:border-amber-600",
   },
   none: {
-    bg: "bg-rose-600 dark:bg-rose-700",
+    bg: "bg-rose-700 dark:bg-rose-800",
     text: "text-white",
-    border: "border-rose-700 dark:border-rose-600",
+    border: "border-rose-800 dark:border-rose-700",
   },
 };
 
 export function AdherenceLegend() {
   const items = [
-    { label: "Dose Recorded (SMS)", cls: "bg-emerald-600" },
+    { label: "Dose Recorded (SMS)", cls: "bg-emerald-700" },
     { label: "Health Worker Logged", cls: "bg-amber-600" },
-    { label: "Missed Dose", cls: "bg-rose-600" },
+    { label: "Missed Dose", cls: "bg-rose-700" },
   ];
   return (
     <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs font-medium text-muted-foreground border-t border-border pt-3">
@@ -61,12 +61,11 @@ export function AdherenceCalendar({
             key={d.id}
             title={`${d.date} · ${d.status.toUpperCase()} · Time: ${d.time}`}
             className={cn(
-              "grid aspect-square place-items-center rounded-lg border font-bold text-xs shadow-2xs transition-all cursor-pointer",
-              compact ? "text-[10px]" : "sm:text-sm",
+              "grid aspect-square place-items-center rounded-sm border font-semibold text-xs transition-colors cursor-default",
+              compact ? "text-[10px]" : "sm:text-xs",
               style.bg,
               style.text,
               style.border,
-              d.status === "late" && "ring-2 ring-amber-400 ring-offset-1 ring-offset-card",
             )}
           >
             <span>{dayNumber}</span>
