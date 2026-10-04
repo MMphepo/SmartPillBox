@@ -49,25 +49,40 @@ const copy: Record<Language, Record<string, string>> = {
   },
 };
 
-function useCountdown(target: string) {
+function useNextDoseCountdown(doseTimes: string[]) {
   const [label, setLabel] = useState("--:--:--");
   useEffect(() => {
     const tick = () => {
+      if (!doseTimes.length) {
+        setLabel("--:--:--");
+        return;
+      }
       const now = new Date();
-      const [h, m] = target.split(":").map(Number);
-      const next = new Date(now);
-      next.setHours(h, m, 0, 0);
-      if (next <= now) next.setDate(next.getDate() + 1);
-      const diff = Math.max(0, next.getTime() - now.getTime());
-      const hh = String(Math.floor(diff / 3600000)).padStart(2, "0");
-      const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-      const ss = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+      let minDiff = Infinity;
+
+      for (const timeStr of doseTimes) {
+        const [h, m] = timeStr.split(":").map(Number);
+        const target = new Date(now);
+        target.setHours(h, m, 0, 0);
+        if (target <= now) target.setDate(target.getDate() + 1);
+        const diff = target.getTime() - now.getTime();
+        if (diff < minDiff) minDiff = diff;
+      }
+
+      if (minDiff === Infinity || minDiff < 0) {
+        setLabel("00:00:00");
+        return;
+      }
+
+      const hh = String(Math.floor(minDiff / 3600000)).padStart(2, "0");
+      const mm = String(Math.floor((minDiff % 3600000) / 60000)).padStart(2, "0");
+      const ss = String(Math.floor((minDiff % 60000) / 1000)).padStart(2, "0");
       setLabel(`${hh}:${mm}:${ss}`);
     };
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, [target]);
+  }, [doseTimes]);
   return label;
 }
 
@@ -88,7 +103,9 @@ function PatientDashboard() {
   const assignedPatientId = user?.patientId || "pat-1";
   const patient = patientById(assignedPatientId);
   const t = copy[language];
-  const countdown = useCountdown(patient.doseTime);
+
+  const currentDoseTimes = patient.doseTimes || [patient.doseTime];
+  const countdown = useNextDoseCountdown(currentDoseTimes);
   const doses = patientDoses(patient.id);
   const todayDose = doses.find((d) => d.date === today);
   const hsa = hsaForPatient(patient.id);
@@ -98,7 +115,8 @@ function PatientDashboard() {
   const isTakenToday = todayDose && todayDose.status !== "missed";
 
   const handleMarkTaken = () => {
-    recordPatientDose(patient.id, today, patient.doseTime);
+    const timeNow = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    recordPatientDose(patient.id, today, timeNow);
     toast.success("Dose recorded", { description: "Your daily dose has been marked as taken." });
   };
 
@@ -125,7 +143,7 @@ function PatientDashboard() {
 
       {/* 1. TODAY'S MEDICATION & NEXT DOSE */}
       <section className="border border-border bg-card p-5 sm:p-6 rounded-md space-y-6">
-        <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
           <div className="flex items-center gap-2">
             <h2 className="font-display text-base font-bold text-foreground">
               Today's Dose Schedule
@@ -137,9 +155,15 @@ function PatientDashboard() {
               {isTakenToday ? t.taken : t.pending}
             </Badge>
           </div>
-          <span className="text-xs text-muted-foreground font-medium flex items-center gap-1">
-            <Clock className="h-3.5 w-3.5" /> Scheduled Time: {patient.doseTime}
-          </span>
+          <div className="text-xs text-muted-foreground font-medium flex items-center gap-1 flex-wrap">
+            <Clock className="h-3.5 w-3.5" />
+            <span>
+              Scheduled Times: <strong>{currentDoseTimes.join(", ")}</strong>
+            </span>
+            <span>
+              ({currentDoseTimes.length > 1 ? `${currentDoseTimes.length}x daily` : "once daily"})
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">

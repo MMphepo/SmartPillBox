@@ -44,6 +44,7 @@ export interface Patient {
   phone: string;
   regimen: string;
   doseTime: string;
+  doseTimes: string[];
 }
 
 export interface AlertItem {
@@ -119,6 +120,7 @@ export const patients: Patient[] = [
     phone: "+265 992 118 774",
     regimen: "2HRZE / 4HR",
     doseTime: "08:00",
+    doseTimes: ["08:00", "20:00"],
   },
   {
     id: "pat-2",
@@ -135,6 +137,7 @@ export const patients: Patient[] = [
     phone: "+265 884 220 619",
     regimen: "2HRZE / 4HR",
     doseTime: "07:30",
+    doseTimes: ["07:30"],
   },
   {
     id: "pat-3",
@@ -151,6 +154,7 @@ export const patients: Patient[] = [
     phone: "+265 997 402 331",
     regimen: "2HRZE / 4HR",
     doseTime: "08:30",
+    doseTimes: ["08:30", "14:00", "20:00"],
   },
   {
     id: "pat-4",
@@ -167,6 +171,7 @@ export const patients: Patient[] = [
     phone: "+265 991 883 267",
     regimen: "2HRZE / 4HR",
     doseTime: "09:00",
+    doseTimes: ["09:00"],
   },
 ];
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Phone, Plus, CheckCircle, Clock } from "lucide-react";
+import { ArrowLeft, Phone, Plus, Clock, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -65,7 +65,9 @@ export function HealthWorkerPatientDetail() {
   const [actionNotes, setNotes] = useState("");
 
   // Schedule Management State
-  const [doseTime, setDoseTime] = useState(patient?.doseTime || "08:00");
+  const initialDoseTimes =
+    patient?.doseTimes || (patient?.doseTime ? [patient.doseTime] : ["08:00"]);
+  const [doseTimes, setDoseTimes] = useState<string[]>(initialDoseTimes);
   const [regimen, setRegimen] = useState(patient?.regimen || "2HRZE / 4HR");
   const [phase, setPhase] = useState<Phase>(patient?.phase || "Intensive");
   const [scheduleError, setScheduleError] = useState<string | null>(null);
@@ -90,18 +92,39 @@ export function HealthWorkerPatientDetail() {
 
   const todayDose = doses.find((d) => d.date === today);
 
+  const handleAddDoseTime = () => {
+    setDoseTimes((prev) => [...prev, "20:00"]);
+  };
+
+  const handleRemoveDoseTime = (index: number) => {
+    if (doseTimes.length <= 1) {
+      setScheduleError("At least one scheduled dose time is required.");
+      return;
+    }
+    setDoseTimes((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDoseTimeChange = (index: number, val: string) => {
+    setDoseTimes((prev) => {
+      const updated = [...prev];
+      updated[index] = val;
+      return updated;
+    });
+  };
+
   const handleScheduleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setScheduleError(null);
 
-    if (!doseTime) {
-      setScheduleError("Scheduled dose time is required.");
+    const validDoseTimes = doseTimes.filter((t) => t.trim().length > 0);
+    if (!validDoseTimes.length) {
+      setScheduleError("At least one valid scheduled dose time is required.");
       return;
     }
 
-    updateDoseSchedule(patient.id, { doseTime, regimen, phase });
+    updateDoseSchedule(patient.id, { doseTimes: validDoseTimes, regimen, phase });
     toast.success("Dose schedule updated successfully", {
-      description: `New scheduled dose time: ${doseTime}`,
+      description: `Scheduled daily dose times: ${validDoseTimes.join(", ")}`,
     });
   };
 
@@ -116,6 +139,8 @@ export function HealthWorkerPatientDetail() {
     setActionModalOpen(false);
     toast.success("Intervention recorded", { description: `${actionType} · ${patient.name}` });
   };
+
+  const currentDoseTimes = patient.doseTimes || [patient.doseTime];
 
   return (
     <div className="space-y-6">
@@ -178,10 +203,14 @@ export function HealthWorkerPatientDetail() {
           </div>
 
           <div>
-            <span className="block text-muted-foreground font-medium">Scheduled Dose Time</span>
-            <span className="block font-bold text-foreground mt-0.5">{patient.doseTime} Daily</span>
+            <span className="block text-muted-foreground font-medium">Daily Scheduled Doses</span>
+            <span className="block font-bold text-foreground mt-0.5">
+              {currentDoseTimes.join(", ")}
+            </span>
             <span className="block text-[11px] text-muted-foreground mt-0.5">
-              {patient.regimen}
+              {currentDoseTimes.length > 1
+                ? `${currentDoseTimes.length} doses daily`
+                : "Once daily"}
             </span>
           </div>
 
@@ -218,39 +247,44 @@ export function HealthWorkerPatientDetail() {
                   Scheduled Time
                 </TableHead>
                 <TableHead className="text-xs font-semibold text-foreground">
-                  Medication Dose
+                  Medication Regimen
                 </TableHead>
-                <TableHead className="text-xs font-semibold text-foreground">Status</TableHead>
+                <TableHead className="text-xs font-semibold text-foreground">Dose Status</TableHead>
                 <TableHead className="text-xs font-semibold text-foreground text-right">
                   Recorded Time
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow className="text-xs">
-                <TableCell className="font-semibold text-foreground flex items-center gap-1.5">
-                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                  {patient.doseTime}
-                </TableCell>
-                <TableCell className="text-muted-foreground">{patient.regimen}</TableCell>
-                <TableCell>
-                  {todayDose && todayDose.status !== "missed" ? (
-                    <Badge
-                      variant="outline"
-                      className="text-[10px] font-semibold border-emerald-500/40 text-emerald-700 dark:text-emerald-400"
-                    >
-                      Taken
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary" className="text-[10px] font-medium">
-                      Pending / Scheduled
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="text-right font-mono text-muted-foreground">
-                  {todayDose ? todayDose.time : "--:--"}
-                </TableCell>
-              </TableRow>
+              {currentDoseTimes.map((time, idx) => {
+                const isTaken = todayDose && todayDose.status !== "missed";
+                return (
+                  <TableRow key={idx} className="text-xs">
+                    <TableCell className="font-semibold text-foreground flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                      {time} ({idx === 0 ? "Morning" : idx === 1 ? "Evening" : `Dose ${idx + 1}`})
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">{patient.regimen}</TableCell>
+                    <TableCell>
+                      {isTaken ? (
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] font-semibold border-emerald-500/40 text-emerald-700 dark:text-emerald-400"
+                        >
+                          Taken
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="text-[10px] font-medium">
+                          Scheduled
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right font-mono text-muted-foreground">
+                      {isTaken ? todayDose?.time : "--:--"}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
@@ -258,54 +292,82 @@ export function HealthWorkerPatientDetail() {
 
       {/* Dose Schedule Management */}
       <section className="border border-border bg-card p-5 rounded-md space-y-4">
-        <h2 className="font-display text-sm font-bold text-foreground border-b border-border pb-2">
-          Manage Dose Schedule
-        </h2>
+        <div className="flex items-center justify-between border-b border-border pb-2">
+          <h2 className="font-display text-sm font-bold text-foreground">Manage Dose Schedule</h2>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleAddDoseTime}
+            className="text-xs h-7 border-border px-2"
+          >
+            <Plus className="mr-1 h-3 w-3" /> Add Dose Time
+          </Button>
+        </div>
 
         {scheduleError && <p className="text-xs font-semibold text-destructive">{scheduleError}</p>}
 
-        <form
-          onSubmit={handleScheduleSubmit}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs"
-        >
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">Daily Dose Time *</Label>
-            <Input
-              type="time"
-              required
-              value={doseTime}
-              onChange={(e) => setDoseTime(e.target.value)}
-              className="text-xs h-9"
-            />
+        <form onSubmit={handleScheduleSubmit} className="space-y-4 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Treatment Regimen</Label>
+              <Input
+                value={regimen}
+                onChange={(e) => setRegimen(e.target.value)}
+                className="text-xs h-9"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold">Treatment Phase</Label>
+              <Select value={phase} onValueChange={(v) => setPhase(v as Phase)}>
+                <SelectTrigger className="text-xs h-9 font-medium">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Intensive" className="text-xs">
+                    Intensive Phase
+                  </SelectItem>
+                  <SelectItem value="Continuation" className="text-xs">
+                    Continuation Phase
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">Treatment Regimen</Label>
-            <Input
-              value={regimen}
-              onChange={(e) => setRegimen(e.target.value)}
-              className="text-xs h-9"
-            />
+          <div className="space-y-2 pt-2 border-t border-border">
+            <Label className="text-xs font-semibold block">Scheduled Dose Times</Label>
+            <div className="space-y-2 max-w-md">
+              {doseTimes.map((time, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-xs font-medium w-16">
+                    Dose {idx + 1}:
+                  </span>
+                  <Input
+                    type="time"
+                    required
+                    value={time}
+                    onChange={(e) => handleDoseTimeChange(idx, e.target.value)}
+                    className="text-xs h-9 flex-1"
+                  />
+                  {doseTimes.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveDoseTime(idx)}
+                      className="h-8 w-8 text-destructive"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label className="text-xs font-semibold">Treatment Phase</Label>
-            <Select value={phase} onValueChange={(v) => setPhase(v as Phase)}>
-              <SelectTrigger className="text-xs h-9 font-medium">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Intensive" className="text-xs">
-                  Intensive Phase
-                </SelectItem>
-                <SelectItem value="Continuation" className="text-xs">
-                  Continuation Phase
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="sm:col-span-3 flex justify-end pt-2">
+          <div className="flex justify-end pt-2">
             <Button type="submit" size="sm" className="text-xs font-semibold h-8">
               Save Schedule Changes
             </Button>
@@ -327,7 +389,7 @@ export function HealthWorkerPatientDetail() {
         <AdherenceLegend />
       </section>
 
-      {/* Assigned HSA Contact & Recent Activity */}
+      {/* Assigned HSA Contact & Device Details */}
       <div className="grid gap-6 md:grid-cols-2">
         <div className="border border-border bg-card p-5 rounded-md space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground border-b border-border pb-2">
