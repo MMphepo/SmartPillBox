@@ -19,15 +19,14 @@ function HealthWorkerFieldLog() {
       <header className="border-b border-border pb-4 flex items-center justify-between">
         <div>
           <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-            Community Field Intervention Log
+            Field Intervention Log
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Audit history of home visits, phone consultations, pill refills, and counselling
-            sessions
+            Record of home visits, calls, counselling, and resupplies
           </p>
         </div>
-        <Badge variant="outline" className="text-xs font-bold">
-          {interventions.length} Entries Logged
+        <Badge variant="outline" className="text-xs font-semibold">
+          {interventions.length} Entries
         </Badge>
       </header>
 
@@ -35,10 +34,9 @@ function HealthWorkerFieldLog() {
         {interventions.length === 0 ? (
           <div className="rounded-xl border border-border bg-card p-8 text-center space-y-2">
             <ClipboardList className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="text-sm font-bold text-foreground">No Field Interventions Logged Yet</p>
+            <p className="text-sm font-semibold text-foreground">No Interventions Logged</p>
             <p className="text-xs text-muted-foreground">
-              Use the "Log Field Action" button in the dashboard or patient profile to record
-              entries.
+              Log actions directly from the dashboard or patient profile pages.
             </p>
           </div>
         ) : (
@@ -48,38 +46,38 @@ function HealthWorkerFieldLog() {
             return (
               <div
                 key={i.id}
-                className="rounded-xl border border-border bg-card p-4 sm:p-5 shadow-sm space-y-2.5 text-xs"
+                className="rounded-xl border border-border bg-card p-4 shadow-sm space-y-2.5 text-xs"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
-                      className="font-bold border-primary/30 text-primary bg-primary/5"
+                      className="font-medium border-primary/30 text-primary bg-primary/5"
                     >
                       {i.type}
                     </Badge>
                     <Link
                       to="/health-worker/patients/$id"
                       params={{ id: p.id }}
-                      className="font-bold text-foreground text-sm hover:underline hover:text-primary"
+                      className="font-semibold text-foreground text-sm hover:underline"
                     >
                       {p.name}
                     </Link>
-                    <span className="text-muted-foreground font-medium">({p.facility})</span>
+                    <span className="text-muted-foreground">({p.facility})</span>
                   </div>
-                  <span className="text-muted-foreground text-[11px] font-medium">
-                    Logged on: <strong>{i.loggedAt}</strong> by <strong>{h?.name || "HSA"}</strong>
+                  <span className="text-muted-foreground text-[11px]">
+                    {i.loggedAt} · {h?.name || "HSA"}
                   </span>
                 </div>
 
-                <p className="text-muted-foreground leading-relaxed font-medium">{i.notes}</p>
+                <p className="text-muted-foreground leading-relaxed">{i.notes}</p>
 
                 <div className="pt-2 flex items-center gap-3 border-t border-border">
                   <a
                     href={`tel:${p.phone.replaceAll(" ", "")}`}
-                    className="inline-flex items-center gap-1 font-bold text-primary hover:underline text-xs"
+                    className="inline-flex items-center gap-1 text-primary hover:underline font-medium text-xs"
                   >
-                    <Phone className="h-3.5 w-3.5" /> Call Patient ({p.phone})
+                    <Phone className="h-3.5 w-3.5" /> {p.phone}
                   </a>
                 </div>
               </div>

@@ -25,7 +25,7 @@ export function StatCard({
   }[tone];
 
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:shadow-md grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3">
+    <div className="rounded-xl border border-border bg-card p-4 shadow-2xs grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
       <div className="min-w-0">
         <p className="truncate text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {label}
@@ -33,7 +33,7 @@ export function StatCard({
         <p className="mt-1 font-display text-2xl font-bold tracking-tight text-foreground">
           {value}
         </p>
-        {hint ? <p className="mt-1 text-xs text-muted-foreground leading-normal">{hint}</p> : null}
+        {hint ? <p className="mt-0.5 text-[11px] text-muted-foreground truncate">{hint}</p> : null}
       </div>
       <span
         className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-lg border", toneClass)}

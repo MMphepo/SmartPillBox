@@ -1,10 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Eye, Filter, UserX } from "lucide-react";
+import { Search, Eye, UserX } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import {
   Select,
@@ -21,13 +20,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { facilities, guardians, patients } from "@/lib/tb-data";
+import { facilities, patients } from "@/lib/tb-data";
 import { useTB } from "@/lib/tb-store";
 import { AdherenceLegend } from "@/components/tb/AdherenceCalendar";
 
 export const Route = createFileRoute("/health-worker/patients/")({
   head: () => ({
-    meta: [{ title: "Patient Cohort Directory — Health Worker Portal" }],
+    meta: [{ title: "Patients — Health Worker Portal" }],
   }),
   component: HealthWorkerPatientsIndex,
 });
@@ -51,97 +50,73 @@ function HealthWorkerPatientsIndex() {
 
   return (
     <div className="space-y-6">
-      <header className="border-b border-border pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-            Patient Cohort Directory
-          </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Monitor enrolled patients, smart box hardware specs, and 30-day adherence rates
-          </p>
-        </div>
-        <Badge variant="outline" className="text-xs font-semibold self-start sm:self-auto">
-          {filteredPatients.length} Patients Listed
+      <header className="border-b border-border pb-4 flex items-center justify-between">
+        <h1 className="font-display text-2xl font-bold text-foreground">Patient Cohort</h1>
+        <Badge variant="outline" className="text-xs font-semibold">
+          {filteredPatients.length} Enrolled
         </Badge>
       </header>
 
-      {/* Search & Filter Controls Card */}
-      <div className="rounded-xl border border-border bg-card p-4 shadow-sm space-y-3">
-        <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">
-          <Filter className="h-3.5 w-3.5 text-primary" /> Filter Directory
-        </div>
+      {/* Filter Controls */}
+      <div className="rounded-2xl border border-border bg-card p-4 shadow-2xs space-y-3">
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="space-y-1">
-            <Label className="text-xs font-semibold">Search Patient Name or Box ID</Label>
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Type name or BOX-..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-8 text-xs h-9"
-              />
-            </div>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search name or BOX-..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-8 text-xs h-9"
+            />
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-xs font-semibold">Facility Catchment</Label>
-            <Select value={facility} onValueChange={setFacility}>
-              <SelectTrigger className="text-xs h-9 font-medium">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="text-xs">
-                  All Catchments ({facilities.length})
+          <Select value={facility} onValueChange={setFacility}>
+            <SelectTrigger className="text-xs h-9 font-medium">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all" className="text-xs">
+                All Catchments
+              </SelectItem>
+              {facilities.map((f) => (
+                <SelectItem key={f} value={f} className="text-xs">
+                  {f}
                 </SelectItem>
-                {facilities.map((f) => (
-                  <SelectItem key={f} value={f} className="text-xs">
-                    {f}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <div className="space-y-1">
-            <Label className="text-xs font-semibold">Treatment Phase</Label>
-            <Select value={phase} onValueChange={setPhase}>
-              <SelectTrigger className="text-xs h-9 font-medium">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all" className="text-xs">
-                  All Treatment Phases
-                </SelectItem>
-                <SelectItem value="Intensive" className="text-xs">
-                  Intensive Phase (Days 1–60)
-                </SelectItem>
-                <SelectItem value="Continuation" className="text-xs">
-                  Continuation Phase (Days 61–180)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={phase} onValueChange={setPhase}>
+            <SelectTrigger className="text-xs h-9 font-medium">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all" className="text-xs">
+                All Phases
+              </SelectItem>
+              <SelectItem value="Intensive" className="text-xs">
+                Intensive Phase
+              </SelectItem>
+              <SelectItem value="Continuation" className="text-xs">
+                Continuation Phase
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
       {/* Cohort Data Table */}
-      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+      <div className="rounded-2xl border border-border bg-card shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-muted/60">
+            <TableHeader className="bg-muted/50">
               <TableRow>
-                <TableHead className="text-xs font-bold text-foreground">
-                  Patient Demographics
-                </TableHead>
+                <TableHead className="text-xs font-bold text-foreground">Patient</TableHead>
                 <TableHead className="text-xs font-bold text-foreground">Facility</TableHead>
                 <TableHead className="text-xs font-bold text-foreground">Phase / Day</TableHead>
-                <TableHead className="text-xs font-bold text-foreground">Pill Box Serial</TableHead>
+                <TableHead className="text-xs font-bold text-foreground">Box Serial</TableHead>
                 <TableHead className="text-xs font-bold text-foreground">Battery</TableHead>
-                <TableHead className="text-xs font-bold text-foreground">
-                  30-Day Adherence
-                </TableHead>
-                <TableHead className="text-xs font-bold text-foreground">Guardian</TableHead>
+                <TableHead className="text-xs font-bold text-foreground">Adherence</TableHead>
                 <TableHead className="text-xs font-bold text-foreground text-right">
                   Actions
                 </TableHead>
@@ -150,23 +125,18 @@ function HealthWorkerPatientsIndex() {
             <TableBody>
               {filteredPatients.length === 0 ? (
                 <TableRow>
-                  <TableCell
-                    colSpan={8}
-                    className="text-center py-10 text-xs text-muted-foreground"
-                  >
-                    <div className="space-y-2">
-                      <UserX className="mx-auto h-8 w-8 text-muted-foreground/60" />
-                      <p className="font-semibold text-foreground">No matching patients found</p>
-                      <p>Try adjusting your search query or facility filter.</p>
+                  <TableCell colSpan={7} className="text-center py-8 text-xs text-muted-foreground">
+                    <div className="space-y-1">
+                      <UserX className="mx-auto h-6 w-6 text-muted-foreground/60" />
+                      <p className="font-semibold text-foreground">No patients found</p>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredPatients.map((p) => {
-                  const g = guardians.find((x) => x.patientId === p.id);
                   const rate = adherenceRate(p.id);
                   return (
-                    <TableRow key={p.id} className="hover:bg-muted/40 transition-colors">
+                    <TableRow key={p.id} className="hover:bg-muted/30 transition-colors">
                       <TableCell className="font-bold text-xs text-foreground">
                         <Link
                           to="/health-worker/patients/$id"
@@ -175,7 +145,7 @@ function HealthWorkerPatientsIndex() {
                         >
                           {p.name}
                         </Link>
-                        <span className="block text-[11px] font-medium text-muted-foreground mt-0.5">
+                        <span className="block text-[11px] font-normal text-muted-foreground">
                           {p.sex}, {p.age} yrs
                         </span>
                       </TableCell>
@@ -213,9 +183,6 @@ function HealthWorkerPatientsIndex() {
                           <span className="font-bold">{rate}%</span>
                         </div>
                       </TableCell>
-                      <TableCell className="text-xs text-muted-foreground font-medium">
-                        {g ? `${g.name} (${g.relation})` : "Unassigned"}
-                      </TableCell>
                       <TableCell className="text-right text-xs">
                         <Button
                           asChild
@@ -224,7 +191,7 @@ function HealthWorkerPatientsIndex() {
                           className="h-8 text-xs font-semibold"
                         >
                           <Link to="/health-worker/patients/$id" params={{ id: p.id }}>
-                            <Eye className="mr-1 h-3.5 w-3.5" /> View Patient
+                            <Eye className="mr-1 h-3.5 w-3.5" /> View
                           </Link>
                         </Button>
                       </TableCell>

@@ -23,38 +23,32 @@ export const Route = createFileRoute("/patient/dashboard")({
 
 const copy: Record<Language, Record<string, string>> = {
   en: {
-    greeting: "Medication Overview",
-    next: "Next scheduled dose in",
-    streak: "Adherence Streak",
-    progress: "Treatment Progress",
-    takeNow: "Open your smart box when the alarm sounds and green LED illuminates.",
-    support: "Request HSA Support",
-    issue: "Report Pill Box Problem",
-    calendar: "30-Day Adherence History",
+    greeting: "Dashboard",
+    next: "Next Dose In",
+    streak: "Streak",
+    progress: "Regimen Progress",
+    support: "Request Support",
+    issue: "Report Problem",
+    calendar: "30-Day History",
     discreet: "Discreet Privacy Mode",
-    discreetHint: "Hides medical terminology to protect screen privacy in public.",
-    taken: "Today's Dose Recorded",
-    pending: "Today's Dose Pending",
-    phaseI: "Intensive Phase (Days 1–60)",
-    phaseC: "Continuation Phase (Days 61–180)",
-    tips: "Keep your smart box dry and charged. Your designated guardian is notified of dose events.",
+    taken: "Dose Taken Today",
+    pending: "Dose Due Today",
+    phaseI: "Intensive Phase",
+    phaseC: "Continuation Phase",
   },
   ny: {
-    greeting: "Mankhwala Anu Lero",
-    next: "Mlingo wotsatira m'maora",
-    streak: "Masiku Otsatizana Kwathunthu",
-    progress: "Kupita Patsogolo kwa Chithandizo",
-    takeNow: "Tsegulani bokosi lanu likalira ndi kuwala kobiriwira.",
-    support: "Pemphani Thandizo kwa HSA",
-    issue: "Nenani Vuto la Bokosi",
-    calendar: "Mbiri ya Masiku 30 Apitawa",
-    discreet: "Njira Yobisika Vuto",
-    discreetHint: "Imabisa mawu a matenda pofuna kusunga chinsinsi pagulu.",
-    taken: "Mlingo wa Lero Walembedwa",
-    pending: "Mlingo wa Lero Sunalembedwe",
-    phaseI: "Gawo Lolimba (Masiku 1–60)",
-    phaseC: "Gawo Lopitiriza (Masiku 61–180)",
-    tips: "Sungani bokosi malo ouma. Womuyang'anira wanu amadziwitsidwa mlingo uliwonse.",
+    greeting: "Mankhwala",
+    next: "Mlingo Wotsatira",
+    streak: "Motsatizana",
+    progress: "Chithandizo",
+    support: "Pemphani Thandizo",
+    issue: "Nenani Vuto",
+    calendar: "Masiku 30",
+    discreet: "Njira Yobisika",
+    taken: "Mlingo Walembedwa",
+    pending: "Mlingo Wosatengedwa",
+    phaseI: "Gawo Lolimba",
+    phaseC: "Gawo Lopitiriza",
   },
 };
 
@@ -105,41 +99,29 @@ function PatientDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Top Welcome Header */}
-      <header className="border-b border-border pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Top Header */}
+      <header className="border-b border-border pb-4 flex items-center justify-between">
         <div>
-          <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-            {discreetMode
-              ? `Daily Check-In — ${patient.name.split(" ")[0]}`
-              : `${t.greeting} — ${patient.name}`}
+          <h1 className="font-display text-2xl font-bold text-foreground">
+            {discreetMode ? "Daily Care" : `${t.greeting} — ${patient.name}`}
           </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {discreetMode
-              ? "Personal Health & Adherence Overview"
-              : `Smart Box Serial: ${patient.boxId} · Facility: ${patient.facility}`}
-          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 cursor-pointer">
+            <EyeOff className="h-3.5 w-3.5" />
+            {t.discreet}
+          </Label>
+          <Switch checked={discreetMode} onCheckedChange={setDiscreetMode} />
         </div>
       </header>
 
-      {/* Discreet Mode Switch Card */}
-      <div className="rounded-xl border border-border bg-card p-4 shadow-sm flex items-center justify-between gap-4">
-        <div className="min-w-0">
-          <Label className="flex items-center gap-2 text-xs font-bold text-foreground">
-            <EyeOff className="h-4 w-4 text-emerald-600 shrink-0" />
-            {t.discreet}
-          </Label>
-          <p className="mt-0.5 text-xs text-muted-foreground leading-normal">{t.discreetHint}</p>
-        </div>
-        <Switch checked={discreetMode} onCheckedChange={setDiscreetMode} />
-      </div>
-
-      {/* Dose Status & Countdown Main Card */}
+      {/* Primary Hero Status Card */}
       <section className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm lg:col-span-2 space-y-5">
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-2xs lg:col-span-2 flex flex-col justify-between space-y-6">
           <div className="flex flex-wrap items-center gap-2">
             <Badge
               variant={todayDose && todayDose.status !== "missed" ? "secondary" : "destructive"}
-              className="text-xs font-semibold px-3 py-1"
+              className="text-xs font-bold px-3 py-1"
             >
               {todayDose && todayDose.status !== "missed" ? t.taken : t.pending}
             </Badge>
@@ -152,26 +134,21 @@ function PatientDashboard() {
             <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               {t.next}
             </p>
-            <p className="font-display text-4xl font-extrabold tabular-nums text-primary sm:text-5xl mt-1.5 tracking-tight">
+            <p className="font-display text-5xl font-extrabold tabular-nums text-primary mt-1 tracking-tight">
               {countdown}
-            </p>
-            <p className="mt-2.5 text-xs text-muted-foreground leading-relaxed">
-              {discreetMode ? t.tips : `${t.takeNow} (Daily window: ${patient.doseTime})`}
             </p>
           </div>
 
-          <div className="pt-2 flex flex-wrap gap-2.5 border-t border-border">
+          <div className="pt-3 flex flex-wrap gap-2.5 border-t border-border">
             <Button
               size="sm"
               onClick={() => {
                 raisePatientRequest(patient.id, "SUPPORT_REQUEST");
-                toast.success("Support request submitted", {
-                  description: `${hsa.name} (${hsa.phone}) has been notified.`,
-                });
+                toast.success("Request sent", { description: `${hsa.name} notified.` });
               }}
               className="text-xs font-bold"
             >
-              <LifeBuoy className="mr-1.5 h-4 w-4" />
+              <LifeBuoy className="mr-1.5 h-3.5 w-3.5" />
               {t.support}
             </Button>
             <Button
@@ -179,59 +156,47 @@ function PatientDashboard() {
               variant="outline"
               onClick={() => {
                 raisePatientRequest(patient.id, "BOX_ISSUE");
-                toast.success("Pill box issue reported", {
-                  description: `Box ${patient.boxId} flagged for clinical review.`,
-                });
+                toast.success("Problem reported", { description: `${patient.boxId} flagged.` });
               }}
-              className="text-xs font-semibold text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-800 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+              className="text-xs font-semibold"
             >
-              <AlertOctagon className="mr-1.5 h-4 w-4" />
+              <AlertOctagon className="mr-1.5 h-3.5 w-3.5" />
               {t.issue}
             </Button>
           </div>
         </div>
 
-        {/* Key KPI Metric Cards */}
+        {/* KPI Metrics Stack */}
         <div className="grid gap-4">
           <StatCard
             label={t.streak}
             value={`${streak(patient.id)} Days`}
             icon={Flame}
             tone="success"
-            hint={`${streak(patient.id)} Consecutive Days Unbroken`}
           />
           <StatCard
-            label="30-Day Adherence Rate"
+            label="Adherence"
             value={`${adherenceRate(patient.id)}%`}
             icon={CheckCircle2}
             tone={adherenceRate(patient.id) >= 85 ? "success" : "warning"}
           />
-          <StatCard
-            label="Scheduled Dose Window"
-            value={patient.doseTime}
-            icon={Clock}
-            hint={discreetMode ? "Daily reminder set" : `Regimen: ${patient.regimen}`}
-          />
+          <StatCard label="Schedule Window" value={patient.doseTime} icon={Clock} />
         </div>
       </section>
 
-      {/* Regimen Progress Timeline Bar */}
-      <section className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-3">
-        <div className="flex items-center justify-between gap-3">
+      {/* Regimen Timeline */}
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-3">
+        <div className="flex items-center justify-between">
           <h2 className="font-display text-base font-bold text-foreground">{t.progress}</h2>
           <span className="text-xs font-bold text-muted-foreground">
             Day {patient.treatmentDay} of {REGIMEN_DAYS} ({progress}%)
           </span>
         </div>
-        <Progress value={progress} className="h-3" />
-        <div className="flex justify-between text-[11px] font-semibold text-muted-foreground pt-1">
-          <span>{t.phaseI}</span>
-          <span>{t.phaseC}</span>
-        </div>
+        <Progress value={progress} className="h-2.5" />
       </section>
 
-      {/* 30-Day Adherence Calendar Grid */}
-      <section className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4">
+      {/* 30-Day Adherence Calendar */}
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-display text-base font-bold text-foreground">{t.calendar}</h2>
           <Pill className="h-4 w-4 text-emerald-600" />
