@@ -7,7 +7,7 @@ import {
   buildInitialTelemetry,
   guardians,
   healthWorkers,
-  patients,
+  patients as initialPatients,
   toISODate,
   type AlertItem,
   type DoseEntry,
@@ -26,6 +26,7 @@ export type SimEvent =
 
 interface TBContextValue {
   today: string;
+  patientList: Patient[];
   doses: DoseEntry[];
   alerts: AlertItem[];
   telemetry: TelemetryLog[];
@@ -38,9 +39,15 @@ interface TBContextValue {
   setDiscreetMode: (v: boolean) => void;
   simulate: (patientId: string, event: SimEvent) => void;
   markAssistedDose: (patientId: string) => void;
+  recordPatientDose: (patientId: string, date: string, time: string) => void;
   logIntervention: (input: Omit<Intervention, "id" | "loggedAt">) => void;
   resolveAlert: (id: string) => void;
   raisePatientRequest: (patientId: string, kind: "SUPPORT_REQUEST" | "BOX_ISSUE") => void;
+  enrolPatient: (patient: Omit<Patient, "id">) => Patient;
+  updateDoseSchedule: (
+    patientId: string,
+    schedule: { doseTime: string; regimen?: string; phase?: Patient["phase"] },
+  ) => void;
   patientDoses: (patientId: string) => DoseEntry[];
   adherenceRate: (patientId: string) => number;
   streak: (patientId: string) => number;
@@ -49,13 +56,14 @@ interface TBContextValue {
 
 const TBContext = createContext<TBContextValue | null>(null);
 
-let counter = 0;
+let counter = 10;
 const nextId = (prefix: string) => `${prefix}-${++counter}`;
 
 export function TBProvider({ children }: { children: ReactNode }) {
   const [now] = useState(() => new Date());
   const today = useMemo(() => toISODate(now), [now]);
 
+  const [patientList, setPatientList] = useState<Patient[]>(initialPatients);
   const [doses, setDoses] = useState<DoseEntry[]>(() => buildInitialHistory(now));
   const [alerts, setAlerts] = useState<AlertItem[]>(() => buildInitialAlerts(now));
   const [telemetry, setTelemetry] = useState<TelemetryLog[]>(() => buildInitialTelemetry(now));
@@ -87,9 +95,34 @@ export function TBProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  const recordPatientDose = useCallback(
+    (patientId: string, date: string, time: string) => {
+      upsertDose(patientId, date, "taken", "smartbox", time);
+    },
+    [upsertDose],
+  );
+
+  const enrolPatient = useCallback((newPatientInput: Omit<Patient, "id">): Patient => {
+    const id = nextId("pat");
+    const created: Patient = { ...newPatientInput, id };
+    setPatientList((prev) => [created, ...prev]);
+    return created;
+  }, []);
+
+  const updateDoseSchedule = useCallback(
+    (
+      patientId: string,
+      schedule: { doseTime: string; regimen?: string; phase?: Patient["phase"] },
+    ) => {
+      setPatientList((prev) => prev.map((p) => (p.id === patientId ? { ...p, ...schedule } : p)));
+    },
+    [],
+  );
+
   const simulate = useCallback(
     (patientId: string, event: SimEvent) => {
-      const patient = patients.find((p) => p.id === patientId)!;
+      const patient = patientList.find((p) => p.id === patientId)!;
+      if (!patient) return;
       const stamp = new Date();
       const clock = `${String(stamp.getHours()).padStart(2, "0")}:${String(stamp.getMinutes()).padStart(2, "0")}`;
       const date = toISODate(stamp);
@@ -139,7 +172,7 @@ export function TBProvider({ children }: { children: ReactNode }) {
         ]);
       }
     },
-    [upsertDose],
+    [patientList, upsertDose],
   );
 
   const markAssistedDose = useCallback(
@@ -171,7 +204,8 @@ export function TBProvider({ children }: { children: ReactNode }) {
 
   const raisePatientRequest = useCallback(
     (patientId: string, kind: "SUPPORT_REQUEST" | "BOX_ISSUE") => {
-      const patient = patients.find((p) => p.id === patientId)!;
+      const patient = patientList.find((p) => p.id === patientId)!;
+      if (!patient) return;
       setAlerts((prev) => [
         {
           id: nextId("alert"),
@@ -188,7 +222,7 @@ export function TBProvider({ children }: { children: ReactNode }) {
         ...prev,
       ]);
     },
-    [],
+    [patientList],
   );
 
   const patientDoses = useCallback(
@@ -220,10 +254,14 @@ export function TBProvider({ children }: { children: ReactNode }) {
     [patientDoses],
   );
 
-  const patientById = useCallback((id: string) => patients.find((p) => p.id === id)!, []);
+  const patientById = useCallback(
+    (id: string) => patientList.find((p) => p.id === id) || patientList[0],
+    [patientList],
+  );
 
   const value: TBContextValue = {
     today,
+    patientList,
     doses,
     alerts,
     telemetry,
@@ -236,9 +274,12 @@ export function TBProvider({ children }: { children: ReactNode }) {
     setDiscreetMode,
     simulate,
     markAssistedDose,
+    recordPatientDose,
     logIntervention,
     resolveAlert,
     raisePatientRequest,
+    enrolPatient,
+    updateDoseSchedule,
     patientDoses,
     adherenceRate,
     streak,
@@ -259,6 +300,5 @@ export function guardianForPatient(patientId: string) {
 }
 
 export function hsaForPatient(patientId: string) {
-  const patient = patients.find((p) => p.id === patientId)!;
-  return healthWorkers.find((h) => h.id === patient.hsaId)!;
+  return healthWorkers[0];
 }
