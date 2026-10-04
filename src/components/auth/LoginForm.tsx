@@ -22,6 +22,11 @@ const ROLE_DETAILS = {
     subtitle: "Patients Enrolled in TB Treatment",
     defaultRoute: "/patient/dashboard",
   },
+  district_officer: {
+    title: "District & Zone TB Officer Sign In",
+    subtitle: "District TB Officers and Zone Programme Managers",
+    defaultRoute: "/district-officer/dashboard",
+  },
 };
 
 export function LoginForm({ role }: LoginFormProps) {

@@ -1,4 +1,15 @@
-export type Facility = "Zomba Central Hospital" | "Bwaila Hospital" | "Machinga Clinic";
+export type Facility =
+  | "Zomba Central Hospital"
+  | "Bwaila Hospital"
+  | "Machinga Clinic"
+  | "Area 25 Health Centre"
+  | "Area 18 Health Centre"
+  | "Kasungu District Hospital"
+  | "Mchinji District Hospital";
+
+export type DistrictName = "Lilongwe" | "Zomba" | "Machinga" | "Kasungu" | "Mchinji";
+export type ZoneName = "Central Zone" | "Southern Zone" | "Northern Zone";
+
 export type Phase = "Intensive" | "Continuation";
 
 export type DoseSource = "smartbox" | "guardian" | "hsa" | "none";
@@ -79,6 +90,192 @@ export interface Intervention {
   notes: string;
   loggedAt: string;
 }
+
+export interface FacilityPerformance {
+  id: string;
+  name: Facility;
+  district: DistrictName;
+  zone: ZoneName;
+  patientCount: number;
+  scheduledDoses: number;
+  recordedDoses: number;
+  adherenceRate: number;
+  missedDoses: number;
+  missedRate: number;
+  status: "Good" | "Monitor" | "Attention";
+  changePct: number; // e.g. +3.2 or -1.5
+  adherenceDistribution: {
+    high: number; // >=95%
+    medium: number; // 80-94%
+    low: number; // <80%
+  };
+}
+
+export interface DistrictPerformance {
+  district: DistrictName;
+  zone: ZoneName;
+  facilityCount: number;
+  patientCount: number;
+  adherenceRate: number;
+  missedDoses: number;
+  changePct: number;
+}
+
+export const facilityPerformances: FacilityPerformance[] = [
+  {
+    id: "fac-1",
+    name: "Area 25 Health Centre",
+    district: "Lilongwe",
+    zone: "Central Zone",
+    patientCount: 142,
+    scheduledDoses: 4260,
+    recordedDoses: 4132,
+    adherenceRate: 97.0,
+    missedDoses: 128,
+    missedRate: 3.0,
+    status: "Good",
+    changePct: 3.0,
+    adherenceDistribution: { high: 108, medium: 25, low: 9 },
+  },
+  {
+    id: "fac-2",
+    name: "Bwaila Hospital",
+    district: "Lilongwe",
+    zone: "Central Zone",
+    patientCount: 198,
+    scheduledDoses: 5940,
+    recordedDoses: 5583,
+    adherenceRate: 94.0,
+    missedDoses: 357,
+    missedRate: 6.0,
+    status: "Monitor",
+    changePct: -1.2,
+    adherenceDistribution: { high: 140, medium: 42, low: 16 },
+  },
+  {
+    id: "fac-3",
+    name: "Area 18 Health Centre",
+    district: "Lilongwe",
+    zone: "Central Zone",
+    patientCount: 121,
+    scheduledDoses: 3630,
+    recordedDoses: 3158,
+    adherenceRate: 87.0,
+    missedDoses: 472,
+    missedRate: 13.0,
+    status: "Attention",
+    changePct: -4.5,
+    adherenceDistribution: { high: 62, medium: 38, low: 21 },
+  },
+  {
+    id: "fac-4",
+    name: "Zomba Central Hospital",
+    district: "Zomba",
+    zone: "Southern Zone",
+    patientCount: 165,
+    scheduledDoses: 4950,
+    recordedDoses: 4727,
+    adherenceRate: 95.5,
+    missedDoses: 223,
+    missedRate: 4.5,
+    status: "Good",
+    changePct: 1.8,
+    adherenceDistribution: { high: 125, medium: 31, low: 9 },
+  },
+  {
+    id: "fac-5",
+    name: "Machinga Clinic",
+    district: "Machinga",
+    zone: "Southern Zone",
+    patientCount: 94,
+    scheduledDoses: 2820,
+    recordedDoses: 2594,
+    adherenceRate: 92.0,
+    missedDoses: 226,
+    missedRate: 8.0,
+    status: "Monitor",
+    changePct: 0.5,
+    adherenceDistribution: { high: 61, medium: 22, low: 11 },
+  },
+  {
+    id: "fac-6",
+    name: "Kasungu District Hospital",
+    district: "Kasungu",
+    zone: "Central Zone",
+    patientCount: 156,
+    scheduledDoses: 4680,
+    recordedDoses: 4342,
+    adherenceRate: 92.8,
+    missedDoses: 338,
+    missedRate: 7.2,
+    status: "Monitor",
+    changePct: -0.8,
+    adherenceDistribution: { high: 102, medium: 39, low: 15 },
+  },
+  {
+    id: "fac-7",
+    name: "Mchinji District Hospital",
+    district: "Mchinji",
+    zone: "Central Zone",
+    patientCount: 118,
+    scheduledDoses: 3540,
+    recordedDoses: 3437,
+    adherenceRate: 97.1,
+    missedDoses: 103,
+    missedRate: 2.9,
+    status: "Good",
+    changePct: 2.1,
+    adherenceDistribution: { high: 95, medium: 18, low: 5 },
+  },
+];
+
+export const districtPerformances: DistrictPerformance[] = [
+  {
+    district: "Lilongwe",
+    zone: "Central Zone",
+    facilityCount: 18,
+    patientCount: 1284,
+    adherenceRate: 95.6,
+    missedDoses: 818,
+    changePct: 1.4,
+  },
+  {
+    district: "Kasungu",
+    zone: "Central Zone",
+    facilityCount: 12,
+    patientCount: 924,
+    adherenceRate: 92.8,
+    missedDoses: 672,
+    changePct: -0.8,
+  },
+  {
+    district: "Mchinji",
+    zone: "Central Zone",
+    facilityCount: 9,
+    patientCount: 712,
+    adherenceRate: 97.1,
+    missedDoses: 291,
+    changePct: 2.1,
+  },
+  {
+    district: "Zomba",
+    zone: "Southern Zone",
+    facilityCount: 14,
+    patientCount: 890,
+    adherenceRate: 95.2,
+    missedDoses: 412,
+    changePct: 1.1,
+  },
+  {
+    district: "Machinga",
+    zone: "Southern Zone",
+    facilityCount: 8,
+    patientCount: 520,
+    adherenceRate: 91.8,
+    missedDoses: 380,
+    changePct: -1.5,
+  },
+];
 
 export const healthWorkers: HealthWorker[] = [
   {
@@ -369,6 +566,10 @@ export const facilities: Facility[] = [
   "Zomba Central Hospital",
   "Bwaila Hospital",
   "Machinga Clinic",
+  "Area 25 Health Centre",
+  "Area 18 Health Centre",
+  "Kasungu District Hospital",
+  "Mchinji District Hospital",
 ];
 
 export const PHASE_BOUNDARY_DAY = 60;
