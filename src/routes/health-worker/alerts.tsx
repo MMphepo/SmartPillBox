@@ -20,19 +20,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { patients, type Intervention } from "@/lib/tb-data";
+
 import { useTB } from "@/lib/tb-store";
+import type { Intervention } from "@/lib/tb-data";
 
 export const Route = createFileRoute("/health-worker/alerts")({
   head: () => ({
-    meta: [{ title: "Triage Queue — Health Worker Portal" }],
+    meta: [{ title: "Alerts — Health Worker Portal" }],
   }),
   component: HealthWorkerAlerts,
 });
 
-function HealthWorkerAlerts() {
-  const { alerts, resolveAlert, logIntervention } = useTB();
+export function HealthWorkerAlerts() {
+  const { patientList, alerts, resolveAlert, logIntervention } = useTB();
   const [modalPatient, setModalPatient] = useState<string | null>(null);
   const [type, setType] = useState<Intervention["type"]>("Home visit");
   const [notes, setNotes] = useState("");
@@ -42,7 +51,7 @@ function HealthWorkerAlerts() {
 
   const submitIntervention = () => {
     if (!modalPatient) return;
-    const patient = patients.find((p) => p.id === modalPatient)!;
+    const patient = patientList.find((p) => p.id === modalPatient)!;
     logIntervention({
       patientId: modalPatient,
       hsaId: patient.hsaId,
@@ -59,92 +68,127 @@ function HealthWorkerAlerts() {
       <header className="border-b border-border pb-4 flex items-center justify-between">
         <div>
           <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
-            Triage Queue
+            Missed-Dose Alerts & Triage
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Clinical alert management and patient contact queue
+            Active alerts requiring clinical review, patient follow-up, or hardware maintenance
           </p>
         </div>
         <Badge
           variant={unresolved.length > 0 ? "destructive" : "outline"}
-          className="text-xs font-semibold px-2.5 py-0.5 border-border"
+          className="text-xs font-semibold border-border px-2.5 py-0.5"
         >
           {unresolved.length} Unresolved
         </Badge>
       </header>
 
-      {/* Unresolved Active Alerts */}
+      {/* Unresolved Alerts Table */}
       <section className="space-y-3">
         <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          Active Alerts ({unresolved.length})
+          Requires Attention ({unresolved.length})
         </h2>
 
         {unresolved.length === 0 ? (
           <div className="border border-border bg-card p-8 rounded-md text-center text-xs text-muted-foreground flex flex-col items-center justify-center gap-2">
-            <CheckCircle className="h-6 w-6 text-emerald-600" />
-            <span className="font-medium text-foreground">Triage Queue Empty</span>
-            <span>All adherence alerts have been reviewed and resolved.</span>
+            <CheckCircle className="h-5 w-5 text-emerald-600" />
+            <span className="font-medium text-foreground">No alerts require attention.</span>
           </div>
         ) : (
-          <div className="border border-border bg-card rounded-md divide-y divide-border">
-            {unresolved.map((a) => {
-              const p = patients.find((x) => x.id === a.patientId)!;
-              return (
-                <div
-                  key={a.id}
-                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs"
-                >
-                  <div className="space-y-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Link
-                        to="/health-worker/patients/$id"
-                        params={{ id: p.id }}
-                        className="font-bold text-foreground text-sm hover:underline"
-                      >
-                        {p.name}
-                      </Link>
-                      <Badge
-                        variant={a.severity === "high" ? "destructive" : "secondary"}
-                        className="text-[10px] uppercase font-semibold"
-                      >
-                        {a.kind.replaceAll("_", " ")}
-                      </Badge>
-                      <span className="text-muted-foreground">Facility: {p.facility}</span>
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed">{a.message}</p>
-                    <p className="text-[11px] text-muted-foreground font-mono">
-                      Box Serial: {p.boxId}
-                    </p>
-                  </div>
+          <div className="border border-border bg-card rounded-md overflow-hidden">
+            <Table>
+              <TableHeader className="bg-muted/40">
+                <TableRow>
+                  <TableHead className="text-xs font-semibold text-foreground">Patient</TableHead>
+                  <TableHead className="text-xs font-semibold text-foreground">
+                    Alert Type
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-foreground">
+                    Alert Message
+                  </TableHead>
+                  <TableHead className="text-xs font-semibold text-foreground">Time</TableHead>
+                  <TableHead className="text-xs font-semibold text-foreground text-right">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {unresolved.map((a) => {
+                  const p = patientList.find((x) => x.id === a.patientId)!;
+                  const time = new Date(a.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
 
-                  <div className="flex items-center gap-2 shrink-0 border-t border-border/40 pt-3 sm:border-0 sm:pt-0">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setModalPatient(p.id)}
-                      className="text-xs h-8 border-border font-medium"
-                    >
-                      <Plus className="mr-1 h-3.5 w-3.5" /> Log Action
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        resolveAlert(a.id);
-                        toast.success("Alert resolved");
-                      }}
-                      className="text-xs font-semibold h-8"
-                    >
-                      Resolve
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
+                  return (
+                    <TableRow key={a.id} className="hover:bg-muted/20 transition-colors text-xs">
+                      <TableCell className="font-bold text-foreground">
+                        <Link
+                          to="/health-worker/patients/$id"
+                          params={{ id: p.id }}
+                          className="hover:underline text-primary"
+                        >
+                          {p.name}
+                        </Link>
+                        <span className="block text-[11px] font-normal text-muted-foreground">
+                          {p.facility}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={a.severity === "high" ? "destructive" : "secondary"}
+                          className="text-[10px] font-semibold uppercase"
+                        >
+                          {a.kind.replaceAll("_", " ")}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground max-w-xs leading-relaxed">
+                        {a.message}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground whitespace-nowrap">
+                        Today, {time}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Button
+                            asChild
+                            size="sm"
+                            variant="outline"
+                            className="text-xs h-7 border-border font-medium"
+                          >
+                            <Link to="/health-worker/patients/$id" params={{ id: p.id }}>
+                              Review
+                            </Link>
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setModalPatient(p.id)}
+                            className="text-xs h-7 border-border font-medium"
+                          >
+                            <Plus className="mr-1 h-3 w-3" /> Action
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              resolveAlert(a.id);
+                              toast.success("Alert resolved");
+                            }}
+                            className="text-xs h-7 font-semibold"
+                          >
+                            Resolve
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
         )}
       </section>
 
-      {/* Resolved Alert History Table */}
+      {/* Resolved Alerts Log */}
       {resolved.length > 0 && (
         <section className="space-y-3 pt-4 border-t border-border">
           <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
@@ -152,7 +196,7 @@ function HealthWorkerAlerts() {
           </h2>
           <div className="border border-border bg-card rounded-md divide-y divide-border text-xs">
             {resolved.map((a) => {
-              const p = patients.find((x) => x.id === a.patientId)!;
+              const p = patientList.find((x) => x.id === a.patientId)!;
               return (
                 <div key={a.id} className="p-3 flex items-center justify-between gap-4">
                   <div className="min-w-0">
@@ -173,7 +217,7 @@ function HealthWorkerAlerts() {
       <Dialog open={modalPatient !== null} onOpenChange={(o) => !o && setModalPatient(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Log Action</DialogTitle>
+            <DialogTitle>Log Intervention</DialogTitle>
             <DialogDescription className="text-xs">
               Record follow-up action for this alert.
             </DialogDescription>

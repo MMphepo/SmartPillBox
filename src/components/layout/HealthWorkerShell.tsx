@@ -6,11 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 
 const NAV_ITEMS = [
-  { to: "/health-worker/dashboard", label: "Dashboard" },
+  { to: "/health-worker/dashboard", label: "Overview" },
   { to: "/health-worker/patients", label: "Patients" },
-  { to: "/health-worker/alerts", label: "Triage" },
-  { to: "/health-worker/adherence", label: "Telemetry" },
-  { to: "/health-worker/field-log", label: "Field Log" },
+  { to: "/health-worker/alerts", label: "Alerts" },
+  { to: "/health-worker/adherence", label: "Reports" },
 ];
 
 export function HealthWorkerShell({ children }: { children: ReactNode }) {
