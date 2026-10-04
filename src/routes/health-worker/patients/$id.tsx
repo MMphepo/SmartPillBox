@@ -1,14 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  BatteryWarning,
-  Phone,
-  Stethoscope,
-  ClipboardPlus,
-  Radio,
-  Clock,
-  CheckCircle2,
-} from "lucide-react";
+import { ArrowLeft, Phone, Plus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -55,9 +46,9 @@ function HealthWorkerPatientDetail() {
   if (!patient) {
     return (
       <div className="py-12 text-center space-y-4">
-        <h1 className="font-display text-lg font-bold text-foreground">Patient Not Found</h1>
-        <Button asChild size="sm" className="font-semibold text-xs">
-          <Link to="/health-worker/patients">← Patient Cohort</Link>
+        <h1 className="font-display text-lg font-bold text-foreground">Patient Record Not Found</h1>
+        <Button asChild size="sm" variant="outline" className="font-medium text-xs border-border">
+          <Link to="/health-worker/patients">← Return to Patient Cohort</Link>
         </Button>
       </div>
     );
@@ -74,46 +65,53 @@ function HealthWorkerPatientDetail() {
       patientId: patient.id,
       hsaId: patient.hsaId,
       type,
-      notes: notes || "Follow-up logged.",
+      notes: notes || "Clinical follow-up recorded.",
     });
     setNotes("");
     setModalOpen(false);
-    toast.success("Action saved", { description: `${type} · ${patient.name}` });
+    toast.success("Intervention recorded", { description: `${type} · ${patient.name}` });
   };
 
   return (
     <div className="space-y-6">
-      {/* Back Link */}
       <Link
         to="/health-worker/patients"
         className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors"
       >
-        <ArrowLeft className="h-4 w-4" /> Back
+        <ArrowLeft className="h-3.5 w-3.5" /> Back to cohort list
       </Link>
 
-      {/* Main Header Card */}
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-2xs space-y-5">
+      {/* Patient Profile Banner */}
+      <div className="border border-border bg-card p-5 rounded-md space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-display text-2xl font-bold text-foreground">{patient.name}</h1>
-              <Badge
-                variant={patient.phase === "Intensive" ? "destructive" : "secondary"}
-                className="text-xs font-bold"
-              >
+              <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+                {patient.name}
+              </h1>
+              <Badge variant="outline" className="text-xs font-semibold border-border">
                 {patient.phase} Phase
               </Badge>
             </div>
-            <p className="text-xs text-muted-foreground mt-1 font-medium">
-              {patient.sex}, {patient.age} yrs · {patient.facility}
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {patient.sex}, {patient.age} yrs · Facility: {patient.facility}
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button size="sm" onClick={() => setModalOpen(true)} className="text-xs font-bold">
-              <ClipboardPlus className="mr-1.5 h-3.5 w-3.5" /> Log Action
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              size="sm"
+              onClick={() => setModalOpen(true)}
+              className="text-xs font-semibold h-8"
+            >
+              <Plus className="mr-1.5 h-3.5 w-3.5" /> Log Action
             </Button>
-            <Button asChild size="sm" variant="outline" className="text-xs font-semibold">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="text-xs font-medium border-border h-8"
+            >
               <a href={`tel:${patient.phone.replaceAll(" ", "")}`}>
                 <Phone className="mr-1.5 h-3.5 w-3.5" /> Call ({patient.phone})
               </a>
@@ -121,68 +119,62 @@ function HealthWorkerPatientDetail() {
           </div>
         </div>
 
-        {/* Clinical Grid */}
-        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs">
-          <div className="rounded-xl bg-muted/30 p-3.5 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider flex items-center gap-1">
-              <Radio className="h-3 w-3 text-primary" /> Box Serial
+        {/* Clinical Summary Row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+          <div>
+            <span className="block text-muted-foreground font-medium">Box Serial</span>
+            <span className="block font-mono font-bold text-foreground mt-0.5">
+              {patient.boxId}
             </span>
-            <p className="font-mono text-sm font-bold mt-1 text-foreground">{patient.boxId}</p>
-            <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1 font-medium">
-              <BatteryWarning
-                className={`h-3.5 w-3.5 ${patient.battery < 30 ? "text-destructive" : "text-emerald-600"}`}
-              />
+            <span className="block text-[11px] text-muted-foreground mt-0.5">
               Battery: {patient.battery}%
-            </p>
+            </span>
           </div>
 
-          <div className="rounded-xl bg-muted/30 p-3.5 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider flex items-center gap-1">
-              <Clock className="h-3 w-3 text-primary" /> Progress
-            </span>
-            <p className="font-semibold text-sm mt-1 text-foreground">
+          <div>
+            <span className="block text-muted-foreground font-medium">Treatment Day</span>
+            <span className="block font-bold text-foreground mt-0.5">
               Day {patient.treatmentDay} of 180
-            </p>
-            <p className="text-[11px] text-muted-foreground mt-1 font-medium">
+            </span>
+            <span className="block text-[11px] text-muted-foreground mt-0.5">
               Window: {patient.doseTime}
-            </p>
+            </span>
           </div>
 
-          <div className="rounded-xl bg-muted/30 p-3.5 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider flex items-center gap-1">
-              <CheckCircle2 className="h-3 w-3 text-emerald-600" /> Adherence
-            </span>
-            <p className="font-semibold text-sm mt-1 text-foreground">{rate}%</p>
-            <Progress value={rate} className="h-1.5 mt-2" />
+          <div>
+            <span className="block text-muted-foreground font-medium">Adherence Rate</span>
+            <div className="flex items-center gap-2 mt-0.5">
+              <Progress value={rate} className="h-1.5 w-16" />
+              <span className="font-bold text-foreground">{rate}%</span>
+            </div>
           </div>
 
-          <div className="rounded-xl bg-muted/30 p-3.5 border border-border">
-            <span className="text-muted-foreground uppercase text-[10px] font-bold tracking-wider">
-              Streak
+          <div>
+            <span className="block text-muted-foreground font-medium">Current Streak</span>
+            <span className="block font-bold text-foreground mt-0.5">{currentStreak} Days</span>
+            <span className="block text-[11px] text-muted-foreground mt-0.5 truncate">
+              {patient.regimen}
             </span>
-            <p className="font-semibold text-sm mt-1 text-foreground">{currentStreak} Days</p>
-            <p className="text-[11px] text-muted-foreground mt-1 font-medium">{patient.regimen}</p>
           </div>
         </div>
       </div>
 
-      {/* Care Contact Info */}
-      <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-3">
-        <div className="flex items-center gap-2 border-b border-border pb-3">
-          <Stethoscope className="h-5 w-5 text-primary shrink-0" />
-          <h2 className="font-display text-sm font-bold text-foreground">Assigned HSA</h2>
-        </div>
+      {/* Assigned HSA Contact */}
+      <div className="border border-border bg-card p-4 rounded-md space-y-2">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          Assigned Health Surveillance Assistant
+        </h2>
         {hsa ? (
-          <div className="text-xs space-y-1 bg-muted/30 p-3 rounded-xl border border-border flex items-center justify-between">
+          <div className="flex items-center justify-between text-xs pt-1">
             <div>
-              <p className="font-bold text-foreground text-sm">{hsa.name}</p>
-              <p className="text-muted-foreground font-medium">
+              <p className="font-bold text-foreground">{hsa.name}</p>
+              <p className="text-muted-foreground">
                 {hsa.role} · {hsa.facility}
               </p>
             </div>
             <a
               href={`tel:${hsa.phone.replaceAll(" ", "")}`}
-              className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
             >
               <Phone className="h-3.5 w-3.5" /> Call ({hsa.phone})
             </a>
@@ -193,44 +185,41 @@ function HealthWorkerPatientDetail() {
       </div>
 
       {/* 30-Day Adherence Calendar */}
-      <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4">
-        <h2 className="font-display text-base font-bold text-foreground">30-Day Adherence</h2>
+      <div className="border border-border bg-card p-5 rounded-md space-y-4">
+        <h2 className="font-display text-base font-bold text-foreground">
+          30-Day Adherence History
+        </h2>
         <AdherenceCalendar doses={doses.slice(-30)} />
         <AdherenceLegend />
       </div>
 
       {/* Field Intervention Log */}
-      <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4">
+      <div className="border border-border bg-card p-5 rounded-md space-y-4">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h2 className="font-display text-base font-bold text-foreground">Intervention Log</h2>
           <Button
             size="sm"
             variant="outline"
             onClick={() => setModalOpen(true)}
-            className="text-xs font-semibold h-8"
+            className="text-xs font-semibold h-7 border-border"
           >
-            <ClipboardPlus className="mr-1 h-3.5 w-3.5" /> Log Entry
+            Log Entry
           </Button>
         </div>
 
         {patientInterventions.length === 0 ? (
-          <p className="text-xs text-muted-foreground text-center py-4">No interventions logged.</p>
+          <p className="text-xs text-muted-foreground py-4 text-center">
+            No field interventions logged to date.
+          </p>
         ) : (
-          <div className="space-y-3 text-xs">
+          <div className="space-y-3 text-xs divide-y divide-border">
             {patientInterventions.map((i) => (
-              <div
-                key={i.id}
-                className="rounded-xl border border-border bg-muted/20 p-3.5 space-y-1"
-              >
+              <div key={i.id} className="pt-3 first:pt-0 space-y-1">
                 <div className="flex items-center justify-between">
-                  <Badge variant="outline" className="font-bold">
-                    {i.type}
-                  </Badge>
-                  <span className="text-[10px] text-muted-foreground font-medium">
-                    {i.loggedAt}
-                  </span>
+                  <span className="font-bold text-foreground">{i.type}</span>
+                  <span className="text-[11px] text-muted-foreground">{i.loggedAt}</span>
                 </div>
-                <p className="text-muted-foreground leading-relaxed pt-1 font-medium">{i.notes}</p>
+                <p className="text-muted-foreground leading-relaxed">{i.notes}</p>
               </div>
             ))}
           </div>
@@ -243,12 +232,12 @@ function HealthWorkerPatientDetail() {
           <DialogHeader>
             <DialogTitle>Log Action for {patient.name}</DialogTitle>
             <DialogDescription className="text-xs">
-              Record a home visit, call, resupply, or counselling note.
+              Record a clinical visit, call, or counselling entry.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2 text-xs">
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold">Type</Label>
+              <Label className="text-xs font-semibold">Intervention Type</Label>
               <Select value={type} onValueChange={(v) => setType(v as Intervention["type"])}>
                 <SelectTrigger className="text-xs h-9">
                   <SelectValue />
@@ -274,14 +263,14 @@ function HealthWorkerPatientDetail() {
               <Textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Details..."
+                placeholder="Intervention details..."
                 className="text-xs min-h-[80px]"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button size="sm" onClick={submitIntervention} className="text-xs font-bold">
-              Save
+            <Button size="sm" onClick={submitIntervention} className="text-xs font-semibold">
+              Save Record
             </Button>
           </DialogFooter>
         </DialogContent>

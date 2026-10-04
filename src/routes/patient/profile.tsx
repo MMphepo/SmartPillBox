@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { User, Phone, Stethoscope, Building2, Radio } from "lucide-react";
+import { Phone } from "lucide-react";
 import { healthWorkers } from "@/lib/tb-data";
 import { useTB } from "@/lib/tb-store";
 import { useAuth } from "@/lib/auth/auth-context";
@@ -23,72 +23,70 @@ export function PatientProfile() {
   return (
     <div className="space-y-6">
       <header className="border-b border-border pb-4">
-        <h1 className="font-display text-2xl font-bold text-foreground">Profile</h1>
+        <h1 className="font-display text-xl sm:text-2xl font-bold text-foreground">
+          Patient Profile
+        </h1>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Personal details and assigned Health Surveillance Assistant
+        </p>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {/* Personal Profile */}
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4">
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            <User className="h-5 w-5 text-emerald-600 shrink-0" />
-            <h2 className="font-display text-base font-bold text-foreground">Personal Details</h2>
-          </div>
+        {/* Personal Profile Details */}
+        <div className="border border-border bg-card p-5 rounded-md space-y-4">
+          <h2 className="font-display text-sm font-bold text-foreground border-b border-border pb-2">
+            Personal Details
+          </h2>
 
-          <div className="space-y-2.5 text-xs">
-            <div className="flex justify-between items-center py-1 border-b border-border">
+          <div className="space-y-2 text-xs divide-y divide-border">
+            <div className="flex justify-between items-center py-1.5">
               <span className="text-muted-foreground font-medium">Full Name</span>
-              <strong className="text-foreground font-bold">{patient.name}</strong>
+              <span className="text-foreground font-bold">{patient.name}</span>
             </div>
-            <div className="flex justify-between items-center py-1 border-b border-border">
+            <div className="flex justify-between items-center py-1.5 pt-2">
               <span className="text-muted-foreground font-medium">Age / Sex</span>
-              <strong className="text-foreground font-semibold">
+              <span className="text-foreground font-semibold">
                 {patient.age} yrs ({patient.sex})
-              </strong>
-            </div>
-            <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <Building2 className="h-3.5 w-3.5 text-primary" /> Facility
               </span>
-              <strong className="text-foreground font-semibold">{patient.facility}</strong>
             </div>
-            <div className="flex justify-between items-center py-1 border-b border-border">
-              <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <Phone className="h-3.5 w-3.5 text-primary" /> Phone
-              </span>
-              <strong className="text-foreground font-semibold">{patient.phone}</strong>
+            <div className="flex justify-between items-center py-1.5 pt-2">
+              <span className="text-muted-foreground font-medium">Facility</span>
+              <span className="text-foreground font-semibold">{patient.facility}</span>
             </div>
-            <div className="flex justify-between items-center py-1">
-              <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <Radio className="h-3.5 w-3.5 text-primary" /> Box Serial
-              </span>
-              <strong className="font-mono text-foreground font-bold">{patient.boxId}</strong>
+            <div className="flex justify-between items-center py-1.5 pt-2">
+              <span className="text-muted-foreground font-medium">Contact Phone</span>
+              <span className="text-foreground font-semibold">{patient.phone}</span>
             </div>
           </div>
         </div>
 
-        {/* Assigned Health Surveillance Assistant */}
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-2xs space-y-4 flex flex-col justify-between">
+        {/* Assigned HSA Contact */}
+        <div className="border border-border bg-card p-5 rounded-md space-y-4 flex flex-col justify-between">
           <div>
-            <div className="flex items-center gap-2 border-b border-border pb-3">
-              <Stethoscope className="h-5 w-5 text-primary shrink-0" />
-              <h2 className="font-display text-base font-bold text-foreground">Assigned HSA</h2>
-            </div>
+            <h2 className="font-display text-sm font-bold text-foreground border-b border-border pb-2">
+              Assigned Health Surveillance Assistant
+            </h2>
 
             {hsa ? (
-              <div className="mt-4 space-y-2 text-xs bg-muted/30 p-3.5 rounded-xl border border-border">
-                <p className="font-bold text-foreground text-sm">{hsa.name}</p>
-                <p className="text-muted-foreground font-medium">
+              <div className="mt-3 space-y-1 text-xs">
+                <p className="font-bold text-foreground">{hsa.name}</p>
+                <p className="text-muted-foreground">
                   {hsa.role} · {hsa.facility}
                 </p>
               </div>
             ) : (
-              <p className="mt-4 text-xs text-muted-foreground">No HSA assigned.</p>
+              <p className="mt-3 text-xs text-muted-foreground">No HSA assigned.</p>
             )}
           </div>
 
           {hsa && (
             <div className="pt-3 border-t border-border">
-              <Button asChild size="sm" className="w-full text-xs font-bold justify-center">
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="w-full text-xs font-semibold border-border justify-center h-8"
+              >
                 <a href={`tel:${hsa.phone.replaceAll(" ", "")}`}>
                   <Phone className="mr-2 h-3.5 w-3.5" /> Call HSA ({hsa.phone})
                 </a>

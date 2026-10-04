@@ -1,20 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  LayoutDashboard,
-  Pill,
-  CalendarDays,
-  UserCheck,
-  LogOut,
-  User,
-  Menu,
-  X,
-  Globe2,
-} from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useTB, type Language } from "@/lib/tb-store";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -24,10 +14,10 @@ import {
 } from "@/components/ui/select";
 
 const NAV_ITEMS = [
-  { to: "/patient/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/patient/treatment", label: "Treatment", icon: Pill },
-  { to: "/patient/adherence", label: "Calendar", icon: CalendarDays },
-  { to: "/patient/profile", label: "Profile", icon: UserCheck },
+  { to: "/patient/dashboard", label: "Dashboard" },
+  { to: "/patient/treatment", label: "Treatment" },
+  { to: "/patient/adherence", label: "Calendar" },
+  { to: "/patient/profile", label: "Profile" },
 ];
 
 export function PatientShell({ children }: { children: ReactNode }) {
@@ -38,60 +28,95 @@ export function PatientShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <div className="moh-flagline h-1.5 w-full shrink-0" />
+      <div className="moh-flagline h-1 w-full shrink-0" />
 
-      <div className="flex flex-1 flex-col md:flex-row">
-        {/* Sidebar Navigation - Desktop */}
-        <aside className="hidden w-56 shrink-0 border-r border-border bg-card md:flex md:flex-col justify-between">
-          <div>
-            <div className="border-b border-border p-4">
-              <div className="flex items-center gap-2.5">
-                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-emerald-600 text-white font-bold shadow-2xs">
-                  <User className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <span className="block truncate font-display text-sm font-bold text-foreground">
-                    Patient Portal
-                  </span>
-                  <span className="block truncate text-[11px] text-muted-foreground">
-                    {user?.name || "Chifundo Banda"}
-                  </span>
-                </div>
-              </div>
+      {/* Top Navigation Bar */}
+      <header className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-6">
+            <div>
+              <span className="block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Ministry of Health
+              </span>
+              <Link
+                to="/patient/dashboard"
+                className="font-display text-sm font-bold tracking-tight text-foreground hover:opacity-80 transition-opacity"
+              >
+                Digital TB Adherence System
+              </Link>
             </div>
 
-            <nav className="p-2.5 space-y-1">
+            {/* Desktop Navigation Links */}
+            <nav className="hidden md:flex items-center gap-1 border-l border-border pl-6">
               {NAV_ITEMS.map((item) => {
                 const isActive =
                   pathname === item.to ||
                   (item.to !== "/patient/dashboard" && pathname.startsWith(item.to));
-                const Icon = item.icon;
                 return (
                   <Link
                     key={item.to}
                     to={item.to}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors",
+                      "px-3 py-1.5 text-xs font-semibold rounded-md transition-colors",
                       isActive
-                        ? "bg-emerald-600 text-white shadow-2xs"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                        ? "bg-secondary text-foreground font-bold border border-border"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                     )}
                   >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <span>{item.label}</span>
+                    {item.label}
                   </Link>
                 );
               })}
             </nav>
           </div>
 
-          <div className="border-t border-border p-3 space-y-2.5 bg-card">
-            <div className="space-y-1 px-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1">
-                <Globe2 className="h-3 w-3" /> Language
-              </label>
+          <div className="hidden md:flex items-center gap-3 text-xs">
+            <span className="font-semibold text-foreground">{user?.name || "Chifundo Banda"}</span>
+
+            <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
+              <SelectTrigger className="h-8 text-xs font-medium w-24 border-border">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en" className="text-xs">
+                  English
+                </SelectItem>
+                <SelectItem value="ny" className="text-xs">
+                  Chichewa
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={logout}
+              className="h-8 text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive border-border"
+            >
+              Sign Out
+            </Button>
+          </div>
+
+          {/* Mobile Menu Toggle Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="h-8 w-8 md:hidden"
+          >
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
+        </div>
+
+        {/* Mobile Dropdown Navigation */}
+        {mobileMenuOpen && (
+          <div className="border-t border-border bg-card px-4 py-3 md:hidden space-y-3">
+            <div className="pb-2 border-b border-border text-xs flex items-center justify-between">
+              <span className="font-semibold text-foreground flex-1">
+                {user?.name || "Chifundo Banda"}
+              </span>
               <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                <SelectTrigger className="h-8 text-xs font-medium">
+                <SelectTrigger className="h-8 text-xs font-medium w-28 border-border">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -104,100 +129,53 @@ export function PatientShell({ children }: { children: ReactNode }) {
                 </SelectContent>
               </Select>
             </div>
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={logout}
-              className="w-full justify-start text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20"
-            >
-              <LogOut className="mr-2 h-3.5 w-3.5" />
-              Sign Out
-            </Button>
-          </div>
-        </aside>
-
-        {/* Mobile Header */}
-        <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-card px-4 py-3 md:hidden">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-emerald-600 text-white font-bold">
-              <User className="h-4 w-4" />
-            </div>
-            <span className="truncate font-display text-sm font-bold">Patient Portal</span>
-          </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="h-9 w-9"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
-        </header>
-
-        {/* Mobile Menu Drawer */}
-        {mobileMenuOpen && (
-          <div className="border-b border-border bg-card p-4 md:hidden space-y-3 z-30">
-            <nav className="space-y-1">
+            <nav className="flex flex-col gap-1">
               {NAV_ITEMS.map((item) => {
                 const isActive =
                   pathname === item.to ||
                   (item.to !== "/patient/dashboard" && pathname.startsWith(item.to));
-                const Icon = item.icon;
                 return (
                   <Link
                     key={item.to}
                     to={item.to}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-semibold",
+                      "px-3 py-2 text-xs font-semibold rounded-md",
                       isActive
-                        ? "bg-emerald-600 text-white"
-                        : "text-muted-foreground hover:bg-muted",
+                        ? "bg-secondary text-foreground font-bold border border-border"
+                        : "text-muted-foreground hover:bg-muted/50",
                     )}
                   >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <span>{item.label}</span>
+                    {item.label}
                   </Link>
                 );
               })}
             </nav>
-            <div className="pt-2 border-t border-border flex flex-col gap-2">
-              <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                <SelectTrigger className="h-8 text-xs font-medium">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en" className="text-xs">
-                    English
-                  </SelectItem>
-                  <SelectItem value="ny" className="text-xs">
-                    Chichewa
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  logout();
-                }}
-                className="w-full justify-center text-xs text-destructive border-destructive/20"
-              >
-                <LogOut className="mr-2 h-3.5 w-3.5" />
-                Sign Out
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setMobileMenuOpen(false);
+                logout();
+              }}
+              className="w-full h-8 text-xs font-medium text-destructive border-border"
+            >
+              Sign Out
+            </Button>
           </div>
         )}
+      </header>
 
-        {/* Main Content Workspace */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-6xl mx-auto w-full">
-          {children}
-        </main>
-      </div>
+      {/* Main Workspace */}
+      <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-6 sm:px-6">{children}</main>
+
+      {/* Understated Institutional Footer */}
+      <footer className="border-t border-border bg-card text-xs text-muted-foreground py-4">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 flex flex-wrap items-center justify-between gap-2">
+          <span>Ministry of Health · Republic of Malawi</span>
+          <span>Patient Portal</span>
+        </div>
+      </footer>
     </div>
   );
 }

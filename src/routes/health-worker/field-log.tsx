@@ -1,6 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Phone, ClipboardList } from "lucide-react";
+import { Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { healthWorkers, patients } from "@/lib/tb-data";
 import { useTB } from "@/lib/tb-store";
 
@@ -22,69 +30,84 @@ function HealthWorkerFieldLog() {
             Field Intervention Log
           </h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Record of home visits, calls, counselling, and resupplies
+            Clinical visits, telephone follow-ups, counselling sessions, and resupplies
           </p>
         </div>
-        <Badge variant="outline" className="text-xs font-semibold">
+        <Badge variant="outline" className="text-xs font-semibold border-border">
           {interventions.length} Entries
         </Badge>
       </header>
 
-      <div className="space-y-3">
-        {interventions.length === 0 ? (
-          <div className="rounded-xl border border-border bg-card p-8 text-center space-y-2">
-            <ClipboardList className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="text-sm font-semibold text-foreground">No Interventions Logged</p>
-            <p className="text-xs text-muted-foreground">
-              Log actions directly from the dashboard or patient profile pages.
-            </p>
-          </div>
-        ) : (
-          interventions.map((i) => {
-            const p = patients.find((x) => x.id === i.patientId)!;
-            const h = healthWorkers.find((x) => x.id === i.hsaId)!;
-            return (
-              <div
-                key={i.id}
-                className="rounded-xl border border-border bg-card p-4 shadow-sm space-y-2.5 text-xs"
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className="font-medium border-primary/30 text-primary bg-primary/5"
-                    >
-                      {i.type}
-                    </Badge>
-                    <Link
-                      to="/health-worker/patients/$id"
-                      params={{ id: p.id }}
-                      className="font-semibold text-foreground text-sm hover:underline"
-                    >
-                      {p.name}
-                    </Link>
-                    <span className="text-muted-foreground">({p.facility})</span>
-                  </div>
-                  <span className="text-muted-foreground text-[11px]">
-                    {i.loggedAt} · {h?.name || "HSA"}
-                  </span>
-                </div>
-
-                <p className="text-muted-foreground leading-relaxed">{i.notes}</p>
-
-                <div className="pt-2 flex items-center gap-3 border-t border-border">
-                  <a
-                    href={`tel:${p.phone.replaceAll(" ", "")}`}
-                    className="inline-flex items-center gap-1 text-primary hover:underline font-medium text-xs"
-                  >
-                    <Phone className="h-3.5 w-3.5" /> {p.phone}
-                  </a>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
+      {interventions.length === 0 ? (
+        <div className="border border-border bg-card p-8 rounded-md text-center text-xs text-muted-foreground">
+          No field interventions recorded yet.
+        </div>
+      ) : (
+        <div className="border border-border bg-card rounded-md overflow-hidden">
+          <Table>
+            <TableHeader className="bg-muted/40">
+              <TableRow>
+                <TableHead className="text-xs font-semibold text-foreground">Logged At</TableHead>
+                <TableHead className="text-xs font-semibold text-foreground">Patient</TableHead>
+                <TableHead className="text-xs font-semibold text-foreground">
+                  Intervention Type
+                </TableHead>
+                <TableHead className="text-xs font-semibold text-foreground">
+                  Health Worker
+                </TableHead>
+                <TableHead className="text-xs font-semibold text-foreground">Notes</TableHead>
+                <TableHead className="text-xs font-semibold text-foreground text-right">
+                  Contact
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {interventions.map((i) => {
+                const p = patients.find((x) => x.id === i.patientId)!;
+                const h = healthWorkers.find((x) => x.id === i.hsaId)!;
+                return (
+                  <TableRow key={i.id} className="hover:bg-muted/20 transition-colors">
+                    <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
+                      {i.loggedAt}
+                    </TableCell>
+                    <TableCell className="text-xs font-bold text-foreground">
+                      <Link
+                        to="/health-worker/patients/$id"
+                        params={{ id: p.id }}
+                        className="hover:underline text-primary"
+                      >
+                        {p.name}
+                      </Link>
+                      <span className="block text-[11px] font-normal text-muted-foreground">
+                        {p.facility}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-xs">
+                      <Badge variant="secondary" className="text-[10px] font-semibold">
+                        {i.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground font-medium">
+                      {h?.name || "HSA"}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground leading-relaxed max-w-xs">
+                      {i.notes}
+                    </TableCell>
+                    <TableCell className="text-right text-xs">
+                      <a
+                        href={`tel:${p.phone.replaceAll(" ", "")}`}
+                        className="inline-flex items-center gap-1 text-primary hover:underline font-medium text-xs"
+                      >
+                        <Phone className="h-3 w-3" /> Call
+                      </a>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      )}
     </div>
   );
 }
