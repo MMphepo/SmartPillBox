@@ -20,6 +20,8 @@ function LoginPage() {
     role = "health_worker";
   } else if (rawRole === "patient") {
     role = "patient";
+  } else if (rawRole === "district-officer" || rawRole === "district_officer") {
+    role = "district_officer";
   }
 
   if (!role) {

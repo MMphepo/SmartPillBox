@@ -22,6 +22,15 @@ const PORTALS = [
     description:
       "View scheduled medication windows, daily adherence records, and treatment regimen progress.",
   },
+  {
+    role: "district_officer" as UserRole,
+    loginPath: "/login/district-officer",
+    appPath: "/district-officer/dashboard",
+    title: "District & Zone TB Officer Portal",
+    subtitle: "District TB Officers and Zone Programme Managers",
+    description:
+      "Monitor aggregated adherence, compare facility performance, and generate summary reports.",
+  },
 ];
 
 export function PortalSelector() {

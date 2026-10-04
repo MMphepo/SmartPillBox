@@ -1,4 +1,4 @@
-export type UserRole = "health_worker" | "patient";
+export type UserRole = "health_worker" | "patient" | "district_officer";
 
 export interface User {
   id: string;
@@ -7,7 +7,9 @@ export interface User {
   role: UserRole;
   title?: string;
   facility?: string;
-  patientId?: string; // For patient role, bound to specific demo patient
+  district?: string;
+  zone?: string;
+  patientId?: string; // For patient role
 }
 
 export interface AuthSession {
