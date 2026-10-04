@@ -46,7 +46,12 @@ interface TBContextValue {
   enrolPatient: (patient: Omit<Patient, "id">) => Patient;
   updateDoseSchedule: (
     patientId: string,
-    schedule: { doseTime: string; regimen?: string; phase?: Patient["phase"] },
+    schedule: {
+      doseTime?: string;
+      doseTimes?: string[];
+      regimen?: string;
+      phase?: Patient["phase"];
+    },
   ) => void;
   patientDoses: (patientId: string) => DoseEntry[];
   adherenceRate: (patientId: string) => number;
@@ -112,9 +117,27 @@ export function TBProvider({ children }: { children: ReactNode }) {
   const updateDoseSchedule = useCallback(
     (
       patientId: string,
-      schedule: { doseTime: string; regimen?: string; phase?: Patient["phase"] },
+      schedule: {
+        doseTime?: string;
+        doseTimes?: string[];
+        regimen?: string;
+        phase?: Patient["phase"];
+      },
     ) => {
-      setPatientList((prev) => prev.map((p) => (p.id === patientId ? { ...p, ...schedule } : p)));
+      setPatientList((prev) =>
+        prev.map((p) => {
+          if (p.id !== patientId) return p;
+          const newDoseTimes =
+            schedule.doseTimes || (schedule.doseTime ? [schedule.doseTime] : p.doseTimes);
+          const primaryDoseTime = newDoseTimes[0] || p.doseTime;
+          return {
+            ...p,
+            ...schedule,
+            doseTimes: newDoseTimes,
+            doseTime: primaryDoseTime,
+          };
+        }),
+      );
     },
     [],
   );

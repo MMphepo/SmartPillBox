@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Eye, UserX, Plus, CheckCircle } from "lucide-react";
+import { Search, Eye, UserX, Plus, CheckCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -63,7 +63,7 @@ export function HealthWorkerPatientsIndex() {
   const [facility, setFacility] = useState<Facility>("Zomba Central Hospital");
   const [regimen, setRegimen] = useState("2HRZE / 4HR");
   const [phase, setPhase] = useState<Phase>("Intensive");
-  const [doseTime, setDoseTime] = useState("08:00");
+  const [doseTimes, setDoseTimes] = useState<string[]>(["08:00"]);
   const [boxId, setBoxId] = useState("BOX-ZOMBA-101");
 
   const openAlerts = alerts.filter((a) => !a.resolved);
@@ -92,10 +92,36 @@ export function HealthWorkerPatientsIndex() {
     });
   }, [patientList, search, statusFilter, facilityFilter, attentionPatientIds, missedPatientIds]);
 
+  const handleAddDoseTime = () => {
+    setDoseTimes((prev) => [...prev, "20:00"]);
+  };
+
+  const handleRemoveDoseTime = (index: number) => {
+    if (doseTimes.length <= 1) {
+      toast.error("At least one scheduled dose time is required");
+      return;
+    }
+    setDoseTimes((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDoseTimeChange = (index: number, val: string) => {
+    setDoseTimes((prev) => {
+      const updated = [...prev];
+      updated[index] = val;
+      return updated;
+    });
+  };
+
   const handleEnrolSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
       toast.error("Patient full name is required");
+      return;
+    }
+
+    const validDoseTimes = doseTimes.filter((t) => t.trim().length > 0);
+    if (!validDoseTimes.length) {
+      toast.error("At least one scheduled dose time is required");
       return;
     }
 
@@ -112,7 +138,8 @@ export function HealthWorkerPatientsIndex() {
       hsaId: "hsa-1",
       phone: phone || "+265 990 000 000",
       regimen,
-      doseTime,
+      doseTime: validDoseTimes[0],
+      doseTimes: validDoseTimes,
     });
 
     setCreatedPatient(created);
@@ -122,6 +149,7 @@ export function HealthWorkerPatientsIndex() {
   const resetFormAndClose = () => {
     setName("");
     setAge("30");
+    setDoseTimes(["08:00"]);
     setCreatedPatient(null);
     setEnrolOpen(false);
   };
@@ -211,7 +239,9 @@ export function HealthWorkerPatientsIndex() {
               <TableHead className="text-xs font-semibold text-foreground">Patient</TableHead>
               <TableHead className="text-xs font-semibold text-foreground">Patient ID</TableHead>
               <TableHead className="text-xs font-semibold text-foreground">Facility</TableHead>
-              <TableHead className="text-xs font-semibold text-foreground">Treatment</TableHead>
+              <TableHead className="text-xs font-semibold text-foreground">
+                Daily Schedule
+              </TableHead>
               <TableHead className="text-xs font-semibold text-foreground">Adherence</TableHead>
               <TableHead className="text-xs font-semibold text-foreground">Status</TableHead>
               <TableHead className="text-xs font-semibold text-foreground text-right">
@@ -233,7 +263,6 @@ export function HealthWorkerPatientsIndex() {
               filteredPatients.map((p) => {
                 const rate = adherenceRate(p.id);
                 const hasAttention = attentionPatientIds.has(p.id);
-                const currentWeek = Math.ceil(p.treatmentDay / 7);
 
                 return (
                   <TableRow key={p.id} className="hover:bg-muted/20 transition-colors">
@@ -254,8 +283,16 @@ export function HealthWorkerPatientsIndex() {
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">{p.facility}</TableCell>
                     <TableCell className="text-xs">
-                      <span className="font-medium">Week {currentWeek}</span>
-                      <span className="ml-1.5 text-[11px] text-muted-foreground">({p.phase})</span>
+                      <span className="font-semibold text-foreground">
+                        {p.doseTimes ? p.doseTimes.join(", ") : p.doseTime}
+                      </span>
+                      <span className="ml-1.5 text-[11px] text-muted-foreground">
+                        (
+                        {p.doseTimes && p.doseTimes.length > 1
+                          ? `${p.doseTimes.length}x daily`
+                          : "once daily"}
+                        )
+                      </span>
                     </TableCell>
                     <TableCell className="text-xs">
                       <div className="flex items-center gap-2">
@@ -360,10 +397,10 @@ export function HealthWorkerPatientsIndex() {
                   </div>
                 </div>
 
-                {/* 2. Treatment Information */}
+                {/* 2. Treatment & Schedule Information */}
                 <div className="space-y-3 border-b border-border pb-4">
                   <h3 className="font-bold uppercase tracking-wider text-muted-foreground text-[10px]">
-                    2. Treatment Information
+                    2. Treatment & Schedule
                   </h3>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1.5">
@@ -389,7 +426,7 @@ export function HealthWorkerPatientsIndex() {
                         className="text-xs h-9"
                       />
                     </div>
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 col-span-2 sm:col-span-1">
                       <Label className="text-xs font-semibold">Treatment Phase</Label>
                       <Select value={phase} onValueChange={(v) => setPhase(v as Phase)}>
                         <SelectTrigger className="text-xs h-9 font-medium">
@@ -405,14 +442,49 @@ export function HealthWorkerPatientsIndex() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1.5">
-                      <Label className="text-xs font-semibold">Scheduled Dose Time</Label>
-                      <Input
-                        type="time"
-                        value={doseTime}
-                        onChange={(e) => setDoseTime(e.target.value)}
-                        className="text-xs h-9"
-                      />
+                  </div>
+
+                  {/* Multiple Dose Times Setup */}
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-xs font-semibold">Scheduled Daily Dose Times *</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleAddDoseTime}
+                        className="text-xs h-7 border-border px-2"
+                      >
+                        <Plus className="mr-1 h-3 w-3" /> Add Dose Time
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2">
+                      {doseTimes.map((time, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                          <span className="text-muted-foreground text-xs font-semibold w-16">
+                            Dose {idx + 1}:
+                          </span>
+                          <Input
+                            type="time"
+                            required
+                            value={time}
+                            onChange={(e) => handleDoseTimeChange(idx, e.target.value)}
+                            className="text-xs h-9 flex-1"
+                          />
+                          {doseTimes.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleRemoveDoseTime(idx)}
+                              className="h-8 w-8 text-destructive"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -468,8 +540,12 @@ export function HealthWorkerPatientsIndex() {
                     <strong className="text-foreground">{createdPatient.id.toUpperCase()}</strong>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Scheduled Dose:</span>{" "}
-                    <strong className="text-foreground">{createdPatient.doseTime}</strong>
+                    <span className="text-muted-foreground">Scheduled Doses:</span>{" "}
+                    <strong className="text-foreground">
+                      {createdPatient.doseTimes
+                        ? createdPatient.doseTimes.join(", ")
+                        : createdPatient.doseTime}
+                    </strong>
                   </div>
                 </div>
               </div>
