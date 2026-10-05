@@ -10,6 +10,40 @@ class ApiModel(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
+class UserRegister(ApiModel):
+    username: str = Field(min_length=3, max_length=100)
+    password: str = Field(min_length=6, max_length=100)
+    name: str = Field(min_length=1, max_length=200)
+    role: str = Field(default="patient")
+    facility: str | None = None
+    district: str | None = None
+    zone: str | None = None
+    patient_id: str | None = None
+
+
+class UserLogin(ApiModel):
+    username: str = Field(min_length=1)
+    password: str = Field(min_length=1)
+    role: str | None = None
+
+
+class UserResponse(ApiModel):
+    id: str
+    username: str
+    name: str
+    role: str
+    facility: str | None = None
+    district: str | None = None
+    zone: str | None = None
+    patient_id: str | None = None
+
+
+class TokenResponse(ApiModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserResponse
+
+
 class PatientData(ApiModel):
     id: str = Field(min_length=1, max_length=100)
     name: str = Field(min_length=1, max_length=200)

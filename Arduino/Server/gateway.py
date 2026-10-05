@@ -1,14 +1,17 @@
+import os
 import serial
 import requests
 import time
+from dotenv import load_dotenv
 
+load_dotenv()
 
-SERIAL_PORT = "COM11"
-BAUD_RATE = 9600
+SERIAL_PORT = os.getenv("ARDUINO_SERIAL_PORT", "COM11")
+BAUD_RATE = int(os.getenv("ARDUINO_BAUD_RATE", "9600"))
 
-SERVER_URL = "http://127.0.0.1:8000/api/events"
+SERVER_URL = os.getenv("ARDUINO_SERVER_URL", "http://127.0.0.1:8001/api/events")
 
-DEVICE_ID = "ZOMBA-042"
+DEVICE_ID = os.getenv("DEVICE_ID", "ZOMBA-042")
 
 
 def send_event(event_type, status):

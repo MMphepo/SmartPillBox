@@ -6,6 +6,20 @@ class Base(DeclarativeBase):
     pass
 
 
+class UserRecord(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(100), primary_key=True)
+    username: Mapped[str] = mapped_column(String(100), nullable=False, unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    role: Mapped[str] = mapped_column(String(50), nullable=False)
+    facility: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    district: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    zone: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    patient_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+
 class PatientRecord(Base):
     __tablename__ = "patients"
 
