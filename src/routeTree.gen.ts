@@ -10,8 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DistrictOfficerRouteImport } from './routes/district-officer'
 import { Route as HealthWorkerRouteImport } from './routes/health-worker'
 import { Route as PatientRouteImport } from './routes/patient'
+import { Route as DistrictOfficerAdherenceRouteImport } from './routes/district-officer/adherence'
+import { Route as DistrictOfficerDashboardRouteImport } from './routes/district-officer/dashboard'
+import { Route as DistrictOfficerFacilitiesRouteImport } from './routes/district-officer/facilities'
+import { Route as DistrictOfficerReportsRouteImport } from './routes/district-officer/reports'
 import { Route as HealthWorkerIndexRouteImport } from './routes/health-worker/index'
 import { Route as HealthWorkerAdherenceRouteImport } from './routes/health-worker/adherence'
 import { Route as HealthWorkerAlertsRouteImport } from './routes/health-worker/alerts'
@@ -32,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DistrictOfficerRoute = DistrictOfficerRouteImport.update({
+  id: '/district-officer',
+  path: '/district-officer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HealthWorkerRoute = HealthWorkerRouteImport.update({
   id: '/health-worker',
   path: '/health-worker',
@@ -41,6 +51,29 @@ const PatientRoute = PatientRouteImport.update({
   id: '/patient',
   path: '/patient',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DistrictOfficerAdherenceRoute =
+  DistrictOfficerAdherenceRouteImport.update({
+    id: '/adherence',
+    path: '/adherence',
+    getParentRoute: () => DistrictOfficerRoute,
+  } as any)
+const DistrictOfficerDashboardRoute =
+  DistrictOfficerDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => DistrictOfficerRoute,
+  } as any)
+const DistrictOfficerFacilitiesRoute =
+  DistrictOfficerFacilitiesRouteImport.update({
+    id: '/facilities',
+    path: '/facilities',
+    getParentRoute: () => DistrictOfficerRoute,
+  } as any)
+const DistrictOfficerReportsRoute = DistrictOfficerReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => DistrictOfficerRoute,
 } as any)
 const HealthWorkerIndexRoute = HealthWorkerIndexRouteImport.update({
   id: '/',
@@ -116,8 +149,13 @@ const HealthWorkerPatientsIdRoute = HealthWorkerPatientsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/district-officer': typeof DistrictOfficerRouteWithChildren
   '/health-worker': typeof HealthWorkerRouteWithChildren
   '/patient': typeof PatientRouteWithChildren
+  '/district-officer/adherence': typeof DistrictOfficerAdherenceRoute
+  '/district-officer/dashboard': typeof DistrictOfficerDashboardRoute
+  '/district-officer/facilities': typeof DistrictOfficerFacilitiesRoute
+  '/district-officer/reports': typeof DistrictOfficerReportsRoute
   '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
   '/health-worker/alerts': typeof HealthWorkerAlertsRoute
   '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
@@ -135,6 +173,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/district-officer': typeof DistrictOfficerRouteWithChildren
+  '/district-officer/adherence': typeof DistrictOfficerAdherenceRoute
+  '/district-officer/dashboard': typeof DistrictOfficerDashboardRoute
+  '/district-officer/facilities': typeof DistrictOfficerFacilitiesRoute
+  '/district-officer/reports': typeof DistrictOfficerReportsRoute
   '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
   '/health-worker/alerts': typeof HealthWorkerAlertsRoute
   '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
@@ -153,8 +196,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/district-officer': typeof DistrictOfficerRouteWithChildren
   '/health-worker': typeof HealthWorkerRouteWithChildren
   '/patient': typeof PatientRouteWithChildren
+  '/district-officer/adherence': typeof DistrictOfficerAdherenceRoute
+  '/district-officer/dashboard': typeof DistrictOfficerDashboardRoute
+  '/district-officer/facilities': typeof DistrictOfficerFacilitiesRoute
+  '/district-officer/reports': typeof DistrictOfficerReportsRoute
   '/health-worker/adherence': typeof HealthWorkerAdherenceRoute
   '/health-worker/alerts': typeof HealthWorkerAlertsRoute
   '/health-worker/dashboard': typeof HealthWorkerDashboardRoute
@@ -174,8 +222,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/district-officer'
     | '/health-worker'
     | '/patient'
+    | '/district-officer/adherence'
+    | '/district-officer/dashboard'
+    | '/district-officer/facilities'
+    | '/district-officer/reports'
     | '/health-worker/adherence'
     | '/health-worker/alerts'
     | '/health-worker/dashboard'
@@ -193,6 +246,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/district-officer'
+    | '/district-officer/adherence'
+    | '/district-officer/dashboard'
+    | '/district-officer/facilities'
+    | '/district-officer/reports'
     | '/health-worker/adherence'
     | '/health-worker/alerts'
     | '/health-worker/dashboard'
@@ -210,8 +268,13 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/district-officer'
     | '/health-worker'
     | '/patient'
+    | '/district-officer/adherence'
+    | '/district-officer/dashboard'
+    | '/district-officer/facilities'
+    | '/district-officer/reports'
     | '/health-worker/adherence'
     | '/health-worker/alerts'
     | '/health-worker/dashboard'
@@ -230,6 +293,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DistrictOfficerRoute: typeof DistrictOfficerRouteWithChildren
   HealthWorkerRoute: typeof HealthWorkerRouteWithChildren
   PatientRoute: typeof PatientRouteWithChildren
   LoginRoleRoute: typeof LoginRoleRoute
@@ -245,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/district-officer': {
+      id: '/district-officer'
+      path: '/district-officer'
+      fullPath: '/district-officer'
+      preLoaderRoute: typeof DistrictOfficerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/health-worker': {
       id: '/health-worker'
       path: '/health-worker'
@@ -258,6 +329,34 @@ declare module '@tanstack/react-router' {
       fullPath: '/patient'
       preLoaderRoute: typeof PatientRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/district-officer/adherence': {
+      id: '/district-officer/adherence'
+      path: '/adherence'
+      fullPath: '/district-officer/adherence'
+      preLoaderRoute: typeof DistrictOfficerAdherenceRouteImport
+      parentRoute: typeof DistrictOfficerRoute
+    }
+    '/district-officer/dashboard': {
+      id: '/district-officer/dashboard'
+      path: '/dashboard'
+      fullPath: '/district-officer/dashboard'
+      preLoaderRoute: typeof DistrictOfficerDashboardRouteImport
+      parentRoute: typeof DistrictOfficerRoute
+    }
+    '/district-officer/facilities': {
+      id: '/district-officer/facilities'
+      path: '/facilities'
+      fullPath: '/district-officer/facilities'
+      preLoaderRoute: typeof DistrictOfficerFacilitiesRouteImport
+      parentRoute: typeof DistrictOfficerRoute
+    }
+    '/district-officer/reports': {
+      id: '/district-officer/reports'
+      path: '/reports'
+      fullPath: '/district-officer/reports'
+      preLoaderRoute: typeof DistrictOfficerReportsRouteImport
+      parentRoute: typeof DistrictOfficerRoute
     }
     '/health-worker/': {
       id: '/health-worker/'
@@ -360,6 +459,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DistrictOfficerRouteChildren {
+  DistrictOfficerAdherenceRoute: typeof DistrictOfficerAdherenceRoute
+  DistrictOfficerDashboardRoute: typeof DistrictOfficerDashboardRoute
+  DistrictOfficerFacilitiesRoute: typeof DistrictOfficerFacilitiesRoute
+  DistrictOfficerReportsRoute: typeof DistrictOfficerReportsRoute
+}
+
+const DistrictOfficerRouteChildren: DistrictOfficerRouteChildren = {
+  DistrictOfficerAdherenceRoute: DistrictOfficerAdherenceRoute,
+  DistrictOfficerDashboardRoute: DistrictOfficerDashboardRoute,
+  DistrictOfficerFacilitiesRoute: DistrictOfficerFacilitiesRoute,
+  DistrictOfficerReportsRoute: DistrictOfficerReportsRoute,
+}
+
+const DistrictOfficerRouteWithChildren = DistrictOfficerRoute._addFileChildren(
+  DistrictOfficerRouteChildren,
+)
+
 interface HealthWorkerRouteChildren {
   HealthWorkerAdherenceRoute: typeof HealthWorkerAdherenceRoute
   HealthWorkerAlertsRoute: typeof HealthWorkerAlertsRoute
@@ -405,6 +522,7 @@ const PatientRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DistrictOfficerRoute: DistrictOfficerRouteWithChildren,
   HealthWorkerRoute: HealthWorkerRouteWithChildren,
   PatientRoute: PatientRouteWithChildren,
   LoginRoleRoute: LoginRoleRoute,
