@@ -153,14 +153,18 @@ def receive_event(
 
 @app.get("/api/events")
 def get_events(
+    device_id: str | None = None,
+    limit: int | None = None,
     db: Session = Depends(get_db),
 ):
+    query = db.query(Event)
+    if device_id:
+        query = query.filter(Event.device_id == device_id)
+    query = query.order_by(Event.timestamp.desc())
+    if limit:
+        query = query.limit(limit)
 
-    events = (
-        db.query(Event)
-        .order_by(Event.timestamp.desc())
-        .all()
-    )
+    events = query.all()
 
 
     return {

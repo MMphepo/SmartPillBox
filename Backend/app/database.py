@@ -27,7 +27,10 @@ def _database_url() -> str:
 
 @lru_cache(maxsize=1)
 def get_engine() -> Engine:
-    return create_engine(_database_url(), pool_pre_ping=True, pool_recycle=300)
+    url = _database_url()
+    if url.startswith("sqlite"):
+        return create_engine(url, connect_args={"check_same_thread": False})
+    return create_engine(url, pool_pre_ping=True, pool_recycle=300)
 
 
 @lru_cache(maxsize=1)

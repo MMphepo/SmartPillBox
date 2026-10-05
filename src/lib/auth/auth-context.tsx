@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { AuthSession, LoginCredentials, User } from "./auth-types";
-import { DEMO_USERS } from "./demo-auth";
+import { getMeApi, loginApi } from "../tb-api";
 
 const STORAGE_KEY = "malawi_tb_portal_session";
 
@@ -22,53 +22,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored) as AuthSession;
-        if (parsed && parsed.user && parsed.token) {
-          setSession(parsed);
+    async function restoreSession() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored) as AuthSession;
+          if (parsed && parsed.token) {
+            // Validate token against Main Backend
+            try {
+              const user = await getMeApi(parsed.token);
+              const restoredSession: AuthSession = { user, token: parsed.token };
+              setSession(restoredSession);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(restoredSession));
+            } catch (e) {
+              console.warn("Session token expired or invalid, clearing session.");
+              localStorage.removeItem(STORAGE_KEY);
+            }
+          }
         }
+      } catch (e) {
+        console.error("Failed to restore session from localStorage", e);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (e) {
-      console.error("Failed to restore session from localStorage", e);
-    } finally {
-      setIsLoading(false);
     }
+    restoreSession();
   }, []);
 
   const login = async ({ username, password, role }: LoginCredentials) => {
-    const normalizedUsername = username.trim().toLowerCase();
-    const entry = DEMO_USERS[normalizedUsername];
+    try {
+      const res = await loginApi({ username, password, role });
+      const newSession: AuthSession = {
+        user: res.user,
+        token: res.accessToken,
+      };
 
-    if (!entry) {
-      return { success: false, error: "Invalid username or password." };
-    }
+      setSession(newSession);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
+      } catch (e) {
+        console.error("Failed to save session", e);
+      }
 
-    if (password && entry.passwordHash !== password) {
-      return { success: false, error: "Invalid username or password." };
-    }
-
-    if (role && entry.user.role !== role) {
+      return { success: true, session: newSession };
+    } catch (err: any) {
       return {
         success: false,
-        error: `Account '${username}' does not have the '${role}' role.`,
+        error: err.message || "Invalid credentials or server unavailable.",
       };
     }
-
-    const newSession: AuthSession = {
-      user: entry.user,
-      token: `demo-token-${entry.user.id}-${Date.now()}`,
-    };
-
-    setSession(newSession);
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
-    } catch (e) {
-      console.error("Failed to save session", e);
-    }
-
-    return { success: true, session: newSession };
   };
 
   const logout = () => {
