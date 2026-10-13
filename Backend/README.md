@@ -38,7 +38,7 @@ through the corresponding `/api` endpoints.
 | Variable | Required | Description |
 | --- | --- | --- |
 | `DATABASE_URL` | Yes | Neon PostgreSQL URL. `postgresql://` and `postgres://` URLs are automatically configured for psycopg 3. |
-| `CORS_ORIGINS` | No | Comma-separated browser origins. Defaults to localhost Vite/preview origins. |
+| `CORS_ORIGINS` | No | Comma-separated browser origins. Defaults to localhost Vite/preview origins. Trailing slashes are ignored, and `*` can match part of an origin, such as `http://localhost:*` for local development ports. |
 
 This API currently inherits the React application's demo authentication
 limitations and does not authorize individual requests. Do not expose it to

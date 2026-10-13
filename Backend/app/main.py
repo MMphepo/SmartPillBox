@@ -1,4 +1,5 @@
 import os
+import re
 from contextlib import asynccontextmanager
 from typing import Any
 
@@ -127,16 +128,23 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-origins = [
-    origin.strip()
+configured_origins = [
+    origin.strip().rstrip("/")
     for origin in os.getenv(
         "CORS_ORIGINS", "http://localhost:5173,http://localhost:4173"
     ).split(",")
     if origin.strip()
 ]
+origins = [origin for origin in configured_origins if "*" not in origin]
+origin_patterns = [
+    re.escape(origin).replace(r"\*", "[^/]+")
+    for origin in configured_origins
+    if "*" in origin
+]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=f"^(?:{'|'.join(origin_patterns)})$" if origin_patterns else None,
     allow_credentials=False,
     allow_methods=["GET", "POST", "PUT", "PATCH", "OPTIONS", "DELETE"],
     allow_headers=["*"],
@@ -194,10 +202,11 @@ def register_user(
     token = create_access_token({"sub": user.id, "role": user.role})
     return TokenResponse(access_token=token, token_type="bearer", user=user_resp)
 
-
 @app.post("/api/auth/login", response_model=TokenResponse)
 def login_user(data: UserLogin, session: Session = Depends(get_db)) -> TokenResponse:
+    print('login: reached')
     normalized_username = data.username.strip().lower()
+    print('login: normalized username', normalized_username)
     user = session.scalar(
         select(UserRecord).where(UserRecord.username == normalized_username)
     )
