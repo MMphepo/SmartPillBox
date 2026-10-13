@@ -4,7 +4,7 @@ import { PortalSelector } from "@/components/auth/PortalSelector";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Portal Selector — Malawi MoH TB Adherence System" },
+      { title: "Portal Selector | Malawi MoH TB Adherence System" },
       {
         name: "description",
         content:
